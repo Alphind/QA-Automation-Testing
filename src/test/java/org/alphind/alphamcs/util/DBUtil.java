@@ -66,20 +66,73 @@ public class DBUtil {
 	public void executeSP(String connectionString, String storedProcedureName) {
 		try {
 			Connection conn = getConnection(connectionString);
-			String SQL = "{call " + storedProcedureName + "(?)}";
+			String SQL = "{call " + storedProcedureName + "}";// + "(?)}";
 			CallableStatement cs = conn.prepareCall(SQL);
-			ResultSet rs = cs.executeQuery();
-			ResultSetMetaData meta = rs.getMetaData();
-			while (rs.next()) {
-				for (int i = 1; i <= meta.getColumnCount(); i++) {
-					String key = meta.getColumnName(i);
+			ResultSet rs = cs.executeQuery(); 
+			ResultSetMetaData meta = rs.getMetaData();			
+			while (rs.next()) 
+			{ 
+				for (int i = 1; i <= meta.getColumnCount(); i++) 
+				{ 
+					String key = meta.getColumnName(i); 
 					String value = rs.getString(key);
-					System.out.println(key + " " + value);
-				}
+					//System.out.println(key + " " + value); 
+				} 
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	
+	//created new method to overload the executeSP which can be used for executing SP with parameters
+	//created by Nandhalala on 26-June-2023
+	public void executeSP(String connectionString, String storedProcedureName, Map<String, String> queryParameters) {
+		try {
+			Connection conn = getConnection(connectionString);
+			int numOfParameters = queryParameters.size();
+			
+			String SQL = "{call " + storedProcedureName;//  + "(?)}";
+			
+			
+			
+			//to add number of parameters in the sql statement
+			String parameterLength = "(";
+			for(int i = 0; i < numOfParameters; i++) {
+				if(i+1 == numOfParameters) {
+					parameterLength+="?)};";
+				}
+				else {
+					parameterLength+="?,";
+				}	
+			}
+			SQL += parameterLength;
+			
+			CallableStatement cs = conn.prepareCall(SQL);
+			
+			//added for set parameters to the statement
+			for(Map.Entry<String , String> parameter : queryParameters.entrySet()) {
+				cs.setNString(parameter.getKey(), parameter.getValue());
+			}
+			//cs.setNString(storedProcedureName, SQL);
+			
+			//get the output resultset
+			ResultSet rs = cs.executeQuery(); 
+			ResultSetMetaData meta = rs.getMetaData();			
+			while (rs.next()) 
+			{ 
+				for (int i = 1; i <= meta.getColumnCount(); i++) 
+				{ 
+					String key = meta.getColumnName(i); 
+					String value = rs.getString(key);
+					System.out.println(key + " " + value); 
+				} 
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
