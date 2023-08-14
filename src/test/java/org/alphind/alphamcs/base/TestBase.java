@@ -93,6 +93,7 @@ public class TestBase {
 		// Setting WebDriverWait with max timeout value of 20 seconds
 		wait = new WebDriverWait(driver, 20);
 
+		System.out.println(ENV);
 		// Environment specific properties file loading
 		InputStream configFile = new FileInputStream(
 				System.getProperty("user.dir") + "\\config\\" + ENV + ".properties");

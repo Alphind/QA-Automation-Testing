@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -48,13 +49,25 @@ public class CommonFunctions extends TestBase {
 			report(LogStatus.INFO, "Clicked on - " + name);
 		} catch (Exception e) {
 			report(LogStatus.FAIL, "failed to click on - " + name);
+			/*
 			if (MCOHomePage.errorMessage.isDisplayed()) {
 				report(LogStatus.FAIL, MCOHomePage.errorMessage.getText());
 			}
+			*/
 			e.printStackTrace();
 		}
 	}
 
+	public void scrollToElement(WebElement element, WebDriver driver) {
+		Actions actions = new Actions(driver);
+		actions.moveToElement(element).build().perform();
+	}
+	
+	public void jsScrollToElement(WebElement element) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();", element);
+	}
+	
 	public void sendKeys(WebElement element, String name, String value) {
 		element.sendKeys(value);
 		report(LogStatus.INFO, "Entered '" + value + "' in " + name);
@@ -67,6 +80,36 @@ public class CommonFunctions extends TestBase {
 		report(LogStatus.INFO, "Selected '" + value.trim() + "' in the dropdown " + name);
 	}
 
+	public void selectDropDown(String name, String value) {
+		//element.click();
+		putStaticWait(1);
+		driver.findElement(By.xpath("//*[text()='" + value + "' and @class='mat-option-text']")).click();
+		//driver.findElement(By.xpath("//*[text()='" + value + "' and @class='mat-option-text']")).click();
+		report(LogStatus.INFO, "Selected '" + value.trim() + "' in the dropdown " + name);
+	}
+	
+	public void selectAutoPopulateDropDown(WebElement element, String name, String value) {
+		element.click();
+		putStaticWait(1);
+		sendKeys(element, name, value);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(driver.findElement(By.xpath("//div[contains(text(),'Loading')]"))
+				.isDisplayed()) {
+			waitUntilElementInvisible(By.xpath("//div[contains(text(),'Loading')]"), 
+					30);
+		}
+		
+		WebElement ele = driver.findElement(By.xpath("//*[text()='" + value + "' and @class='mat-option-text']"));//.click();
+		waitUntilClickable(element, 30);
+		ele.click();
+		report(LogStatus.INFO, "Selected '" + value.trim() + "' in the dropdown " + name);
+	}
+	
 	public void clickCheckbox(WebElement element, String name) {
 		element.click();
 		report(LogStatus.INFO, "Clicked on checkbox- " + name);
@@ -97,7 +140,15 @@ public class CommonFunctions extends TestBase {
 	public void waitUntilClickable(WebElement ele, int seconds) {
 		new WebDriverWait(driver, seconds).until(ExpectedConditions.elementToBeClickable(ele));
 	}
+	
+	public void waitUntilElementInvisible(By elexpath, int seconds) {
+		new WebDriverWait(driver, seconds).until(ExpectedConditions.invisibilityOfElementLocated(elexpath));
+	}
 
+	public void waitUntilElementVisible(By elexpath, int seconds) {
+		new WebDriverWait(driver, seconds).until(ExpectedConditions.visibilityOfElementLocated(elexpath));
+	}
+	
 	public String getCurrentDate() {
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
 		return df.format(new Date());
@@ -112,5 +163,19 @@ public class CommonFunctions extends TestBase {
 		dt = c.getTime();
 		return df.format(dt);
 	}
+	
+	//Created by nandhalala
+	//To get text value from web element
+	public String getText(WebElement ele) {
+		return ele.getText();
+	}
 
+	public void waitForLoadingToDisappear() {
+		if(driver.findElement(By.xpath("//div[contains(text(),'Loading')]"))
+				.isDisplayed()) {
+			waitUntilElementInvisible(By.xpath("//div[contains(text(),'Loading')]"), 
+					30);
+		}
+	}
+	
 }
