@@ -1,1 +1,6 @@
 /target/
+/testdata/
+/test-output/
+/reports/
+/logs/
+/errorScreenshots/
