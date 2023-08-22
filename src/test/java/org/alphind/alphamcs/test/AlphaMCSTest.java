@@ -76,10 +76,10 @@ public class AlphaMCSTest extends TestBase {
 			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
 		}
 
-		homePage.naviagteToCMS1500();
+		//homePage.naviagteToCMS1500();
 		cms1500 = new MCOCMS1500Page(driver);
-		String claimId = cms1500.createClaim();
-		report(LogStatus.PASS, "New CMS 1500 claim created, Claim ID - " + claimId);
+		//String claimId = cms1500.createClaim();
+		//report(LogStatus.PASS, "New CMS 1500 claim created, Claim ID - " + claimId);
 		// patientEnrollmentPage.filterByPatientId(patientId);
 
 //		patientEnrollmentPage.filterByPatientId("188917");

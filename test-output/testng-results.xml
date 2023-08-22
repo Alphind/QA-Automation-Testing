@@ -2,46 +2,46 @@
 <testng-results ignored="2" total="3" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2023-06-12T11:37:15 EDT" name="Default suite" finished-at="2023-06-12T11:38:31 EDT" duration-ms="75991">
+  <suite started-at="2023-08-22T14:54:34 GMT-04:00" name="Default suite" finished-at="2023-08-22T15:00:42 GMT-04:00" duration-ms="368161">
     <groups>
     </groups>
-    <test started-at="2023-06-12T11:37:15 EDT" name="Default test" finished-at="2023-06-12T11:38:31 EDT" duration-ms="75991">
-      <class name="org.alphind.alphamcs.test.AlphaMCSTest">
-        <test-method is-config="true" signature="suiteSetup()[pri:0, instance:org.alphind.alphamcs.test.AlphaMCSTest@5778826f]" started-at="2023-06-12T11:37:13 EDT" name="suiteSetup" finished-at="2023-06-12T11:37:15 EDT" duration-ms="1338" status="PASS">
+    <test started-at="2023-08-22T14:54:34 GMT-04:00" name="Default test" finished-at="2023-08-22T15:00:42 GMT-04:00" duration-ms="368161">
+      <class name="org.alphind.alphamcs.test.ClaimTest">
+        <test-method is-config="true" signature="suiteSetup()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@31e3250d]" started-at="2023-08-22T14:54:31 GMT-04:00" name="suiteSetup" finished-at="2023-08-22T14:54:34 GMT-04:00" duration-ms="3639" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- suiteSetup -->
-        <test-method is-config="true" signature="loadBaseUrl(java.lang.reflect.Method)[pri:0, instance:org.alphind.alphamcs.test.AlphaMCSTest@5778826f]" started-at="2023-06-12T11:37:15 EDT" name="loadBaseUrl" finished-at="2023-06-12T11:37:26 EDT" duration-ms="10916" status="PASS">
+        <test-method is-config="true" signature="loadBaseUrl(java.lang.reflect.Method)[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@31e3250d]" started-at="2023-08-22T14:54:34 GMT-04:00" name="loadBaseUrl" finished-at="2023-08-22T14:55:09 GMT-04:00" duration-ms="34731" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[public void org.alphind.alphamcs.test.AlphaMCSTest.newPatientEnrollment()]]>
+                <![CDATA[public void org.alphind.alphamcs.test.ClaimTest.incomingFile837P()]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- loadBaseUrl -->
-        <test-method signature="newPatientEnrollment()[pri:0, instance:org.alphind.alphamcs.test.AlphaMCSTest@5778826f]" started-at="2023-06-12T11:37:26 EDT" name="newPatientEnrollment" finished-at="2023-06-12T11:38:30 EDT" duration-ms="64689" status="PASS">
+        <test-method signature="incomingFile837P()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@31e3250d]" started-at="2023-08-22T14:55:09 GMT-04:00" name="incomingFile837P" finished-at="2023-08-22T15:00:42 GMT-04:00" duration-ms="332652" status="PASS">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- newPatientEnrollment -->
-        <test-method is-config="true" signature="screenshotAndDeleteCookies(org.testng.ITestResult)[pri:0, instance:org.alphind.alphamcs.test.AlphaMCSTest@5778826f]" started-at="2023-06-12T11:38:30 EDT" name="screenshotAndDeleteCookies" finished-at="2023-06-12T11:38:31 EDT" duration-ms="331" status="PASS">
+        </test-method> <!-- incomingFile837P -->
+        <test-method is-config="true" signature="screenshotAndDeleteCookies(org.testng.ITestResult)[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@31e3250d]" started-at="2023-08-22T15:00:42 GMT-04:00" name="screenshotAndDeleteCookies" finished-at="2023-08-22T15:00:42 GMT-04:00" duration-ms="701" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[[TestResult name=newPatientEnrollment status=SUCCESS method=AlphaMCSTest.newPatientEnrollment()[pri:0, instance:org.alphind.alphamcs.test.AlphaMCSTest@5778826f] output={null}]]]>
+                <![CDATA[[TestResult name=incomingFile837P status=SUCCESS method=ClaimTest.incomingFile837P()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@31e3250d] output={null}]]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- screenshotAndDeleteCookies -->
-        <test-method is-config="true" signature="suiteTearDown()[pri:0, instance:org.alphind.alphamcs.test.AlphaMCSTest@5778826f]" started-at="2023-06-12T11:38:31 EDT" name="suiteTearDown" finished-at="2023-06-12T11:38:31 EDT" duration-ms="280" status="PASS">
+        <test-method is-config="true" signature="suiteTearDown()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@31e3250d]" started-at="2023-08-22T15:00:43 GMT-04:00" name="suiteTearDown" finished-at="2023-08-22T15:00:43 GMT-04:00" duration-ms="913" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- suiteTearDown -->
-      </class> <!-- org.alphind.alphamcs.test.AlphaMCSTest -->
+      </class> <!-- org.alphind.alphamcs.test.ClaimTest -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
 </testng-results>

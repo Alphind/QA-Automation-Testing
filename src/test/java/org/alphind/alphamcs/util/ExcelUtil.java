@@ -95,4 +95,32 @@ public class ExcelUtil {
 		}
 		return dataMap;
 	}
+	
+	public static int updateExcelData(String filePath, String sheetName, String methodName, String columnName, String value) {
+		
+		Fillo fillo = new Fillo();
+		
+		Connection connection = null;
+		
+		int status = 0;
+		
+		try {
+			connection = fillo.getConnection(filePath);
+		
+		
+		String query = "Update "+sheetName+" set "+columnName+" = '"
+				+value+"' where testName = '"+methodName+"'";
+		
+		status = connection.executeUpdate(query);
+		
+		}
+		
+		catch (FilloException e) {
+			e.printStackTrace();
+		}
+		
+		return status;
+		
+	}
+	
 }

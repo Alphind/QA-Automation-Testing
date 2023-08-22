@@ -23,6 +23,9 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 	@FindBy(xpath = "//mat-label[text()='Claim Header ID']/parent::label/parent::span/preceding-sibling::input")
 	private WebElement filterClaimHeaderIdInputBox;
 	
+	@FindBy(xpath = "//mat-label[text()='My MCS Claim #']/parent::label/parent::span/preceding-sibling::input")
+	private WebElement filterMyMCSClaimNumber;
+	
 	@FindBy(xpath = "//span[text()=' Search ']/parent::button")
 	private WebElement filterSearchButton;
 	
@@ -89,6 +92,29 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 		String reason = getText(adjustmentReason);
 		System.out.println(status + "\n" + reason);
 		report(LogStatus.INFO,"The status of claim Header "+claimHeaderId+" is "+status+
+				" with reason : "+reason);
+	}
+	
+public void searchWithMCSNumberAndViewClaim(String mcsnumber) {
+		
+		putStaticWait(2);
+		sendKeys(filterMyMCSClaimNumber, "My MCS Claim Number", mcsnumber);
+		putStaticWait(2);
+		waitUntilClickable(filterSearchButton, 30);
+		click(filterSearchButton, "Search");
+		waitForLoadingToDisappear();
+		putStaticWait(2);
+		click(firstRowRecord, mcsnumber);
+		waitForLoadingToDisappear();
+		putStaticWait(2);
+		driver.findElement(By.xpath("//span[text()=' Quick View ']/parent::button")).click();
+		waitForLoadingToDisappear();
+		putStaticWait(2);
+		String status = getText(claimStatus);
+		putStaticWait(2);
+		String reason = getText(adjustmentReason);
+		System.out.println(status + "\n" + reason);
+		report(LogStatus.INFO,"The status of claim Header "+mcsnumber+" is "+status+
 				" with reason : "+reason);
 	}
 	

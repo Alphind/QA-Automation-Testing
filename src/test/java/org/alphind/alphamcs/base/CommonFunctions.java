@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-import org.alphind.alphamcs.pages.MCOHomePage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -30,6 +29,7 @@ import com.relevantcodes.extentreports.LogStatus;
 
 public class CommonFunctions extends TestBase {
 
+	@SuppressWarnings("unused")
 	private static final Logger log = LogManager.getLogger(CommonFunctions.class);
 
 	public void tabAndEnter() {

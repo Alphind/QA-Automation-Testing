@@ -3,15 +3,15 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="org.alphind.alphamcs.test.AlphaMCSTest">
+      <class name="org.alphind.alphamcs.test.ClaimTest">
         <methods>
           <include name="suiteSetup"/>
           <include name="loadBaseUrl"/>
           <include name="screenshotAndDeleteCookies"/>
-          <include name="newPatientEnrollment"/>
+          <include name="incomingFile837P"/>
           <include name="suiteTearDown"/>
         </methods>
-      </class> <!-- org.alphind.alphamcs.test.AlphaMCSTest -->
+      </class> <!-- org.alphind.alphamcs.test.ClaimTest -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
