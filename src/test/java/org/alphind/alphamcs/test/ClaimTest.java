@@ -21,6 +21,7 @@ public class ClaimTest extends TestBase {
 	String userName = "shc/shctest";
 	String passWord = "Letmein@12345";
 	
+	
 	@Test
 	public void viewClaim() {
 		
@@ -46,6 +47,8 @@ public class ClaimTest extends TestBase {
 		
 		claimMaintenancepage.searchWithHeaderAndViewClaim("6557017");
 		
+		//claimMaintenancepage.searchWithMCSNumberAndViewClaim("250600");
+		
 	}
 	
 	@Test
@@ -67,7 +70,33 @@ public class ClaimTest extends TestBase {
 		
 		cms1500page = homePage.navigateToCMS1500Page();
 		
-		cms1500page.createClaim("37", "07/13/2023");
+		if(cms1500page.isCMS1500PageDisplayed()) {
+			report(LogStatus.PASS, "CMS 1500 page is displayed");
+		}else {
+			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
+		}	
+		
+		String claimnumber=cms1500page.createClaim();
+		
+		String mcsnumber = claimnumber.replaceAll("[^0-9]", "");
+		
+		report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : "+mcsnumber);
+		
+		String conStr = envConfig.getProperty("devDBConnectionString");
+		
+		dbUtil = new DBUtil();
+		
+		String wrapper = "asp_portal_claims_processing_wrapper";
+
+		dbUtil.executeSP(conStr, wrapper);
+		
+		claimMaintenancepage = homePage.navigateToClaimMaintenance();
+		
+		claimMaintenancepage.isClaimMaintenancePageDisplayed();
+		
+		claimMaintenancepage.clickFilter();
+		
+		claimMaintenancepage.searchWithMCSNumberAndViewClaim(mcsnumber);
 		
 	}
 	
