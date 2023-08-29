@@ -1,5 +1,6 @@
 package org.alphind.alphamcs.pages;
 
+import static org.testng.Assert.assertEquals;
 import org.alphind.alphamcs.base.CommonFunctions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -126,6 +127,7 @@ public class MCOCMS1500Page extends CommonFunctions {
 	
 	
 	
+	
 	////////////////// Implementations
 
 	public MCOCMS1500Page(WebDriver driver) {
@@ -133,6 +135,7 @@ public class MCOCMS1500Page extends CommonFunctions {
 		PageFactory.initElements(driver, this);
 	}
 
+	//Created by Nandhalala
 	public boolean isCMS1500PageDisplayed() {
 		waitForLoadingToDisappear();
 		if(cms1500heading.isDisplayed()) {
@@ -141,7 +144,8 @@ public class MCOCMS1500Page extends CommonFunctions {
 		return false;
 	}
 	
-	public String createClaim() {
+	//Created by Nandhalala
+	public String createAndSubmitClaim() {
 		
 		String patientid = dataMap.get("patientid"); 
 		String patientSigndate = dataMap.get("patientSigndate");
@@ -169,27 +173,40 @@ public class MCOCMS1500Page extends CommonFunctions {
 		click(patientSearchButton, "Patient Search button");
 		if(patientID.isDisplayed()) {
 			sendKeys(patientID, "Patient ID", patientid);
+			String actualpatid = getAttribute(patientID, "ng-reflect-model");
+			assertEquals(actualpatid, patientid, "Patient Id from text field is "+actualpatid+ 
+					" not "+patientid);
 		}
 		click(searchPatient, "Search");
 		waitForLoadingToDisappear();
 		click(driver.findElement(By.xpath("//tbody/tr/td[1]")), 
 				"Patient ID : "+patientid);
+		
 		click(selectPatientButton, "Select Patient");
 		waitForLoadingToDisappear();
 		putStaticWait(5);
-		//scrollToElement(employmentStatusUnknown,driver);
+		
 		click(employmentStatusUnknown, "Unknown");
-		//scrollToElement(autoAccientUnknown,driver);
+		
 		click(autoAccientUnknown, "Unknown");
-		//scrollToElement(otherAccientUnknown,driver);
+		
 		click(otherAccientUnknown, "Unknown");
-		//scrollToElement(patientSignDate,driver);
+		
 		sendKeys(patientSignDate, "Patient Sign Date", patientSigndate);
 		putStaticWait(2);
 		
+		String actualPatientSignDate = getAttribute(patientSignDate, "value");
+		assertEquals(actualPatientSignDate, patientSigndate,"Patient Sign Date from field is "
+		+actualPatientSignDate+" not equals "+ patientSigndate);
+		
 		sendKeys(diagnosis1, "Diagnosis 1", diagnosisCode);
 		waitForLoadingToDisappear();
-		//driver.findElement(By.xpath("//span[contains(text(),'"+diagnosisCode+"')]")).click();
+		
+		String actualDiagnosis1 = getAttribute(diagnosis1, "value");
+		
+		assertEquals(actualDiagnosis1, diagnosisCode, "Diagnosis 1 from field is "+actualDiagnosis1+
+				" not equals "+diagnosisCode);
+		
 		putStaticWait(2);
 		click(providerSearchButton, "Provider Search");
 		waitForLoadingToDisappear();

@@ -46,6 +46,7 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 		
 	}
 	
+	//Created by Nandhalala
 	public boolean isClaimMaintenancePageDisplayed() {
 		waitForLoadingToDisappear();
 		
@@ -63,7 +64,7 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 		
 	}
 	
-	
+	//Created by Nandhalala
 	public void clickFilter() {
 		
 		waitForLoadingToDisappear();
@@ -73,6 +74,7 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 		
 	}
 	
+	//Created by Nandhalala
 	public void searchWithHeaderAndViewClaim(String claimHeaderId) {
 		
 		sendKeys(filterClaimHeaderIdInputBox, "Claim Header ID", claimHeaderId);
@@ -95,7 +97,9 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 				" with reason : "+reason);
 	}
 	
-public void searchWithMCSNumberAndViewClaim(String mcsnumber) {
+	
+	//Created by Nandhalala
+	public void searchWithMCSNumberAndViewClaim(String mcsnumber) {
 		
 		putStaticWait(2);
 		sendKeys(filterMyMCSClaimNumber, "My MCS Claim Number", mcsnumber);

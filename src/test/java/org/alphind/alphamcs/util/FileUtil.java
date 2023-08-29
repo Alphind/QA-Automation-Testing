@@ -49,9 +49,10 @@ public class FileUtil extends CommonFunctions {
 		}
 	}
 
-	public String findFile(String partialFileName, String folderName) {
-		File[] listFiles = new File(folderName).listFiles();
-		Arrays.sort(listFiles, Comparator.comparingLong(File::lastModified).reversed());
+	public String findFile(String partialFileName, String folderName, long currentTime) {
+		File[] listFiles = new File(folderName).listFiles(file->file.lastModified() > currentTime);
+		//Arrays.sort(listFiles, Comparator.comparingLong(File::lastModified).reversed());
+		Arrays.sort(listFiles, Comparator.comparingLong(File::lastModified)); //Modified from above line as the above line is picking up the old file.
 		String fullFileName = "File Not Found";
 		for (int i = 0; i < listFiles.length; i++) {
 
@@ -67,6 +68,26 @@ public class FileUtil extends CommonFunctions {
 		return fullFileName;
 	}
 
+	public String findFile(String partialFileName, String folderName) {
+		File[] listFiles = new File(folderName).listFiles();
+		//Arrays.sort(listFiles, Comparator.comparingLong(File::lastModified).reversed());
+		Arrays.sort(listFiles, Comparator.comparingLong(File::lastModified)); //Modified from above line as the above line is picking up the old file.
+		String fullFileName = "File Not Found";
+		for (int i = 0; i < listFiles.length; i++) {
+
+			if (listFiles[i].isFile()) {
+				String fileName = listFiles[i].getName();
+				// if (fileName.startsWith(partialFileName) && fileName.endsWith(".txt"))
+				if (fileName.contains(partialFileName)) {
+					System.out.println("found file" + " " + fileName);
+					fullFileName = fileName;
+				}
+			}
+		}
+		return fullFileName;
+	}
+	
+	
 	public boolean isFileProcessed(String partialFileName, String folderName, int maxMinute) {
 		System.out.println("waiting for max " + maxMinute + " min for file to be processed");
 		long startTime = System.currentTimeMillis();
@@ -78,7 +99,7 @@ public class FileUtil extends CommonFunctions {
 				System.out.println("waited for max " + maxMinute + " min for file to be processed");
 				return false;
 			}
-		} while (!(findFile(partialFileName, folderName) == "File Not Found"));
+		} while (!(findFile(partialFileName, folderName, startTime) == "File Not Found"));
 		putStaticWait(10);
 		return true;
 	}
@@ -89,7 +110,7 @@ public class FileUtil extends CommonFunctions {
 		String fileName = "File Not Found";
 		do {
 			putStaticWait(10);
-			fileName = findFile(partialFileName, folderName);
+			fileName = findFile(partialFileName, folderName, startTime);
 			endTime = System.currentTimeMillis();
 			if ((endTime - startTime) / 60000 > maxWaitMinute) {
 				System.out.println("waited for max " + maxWaitMinute + " min for file to appear");
@@ -99,6 +120,18 @@ public class FileUtil extends CommonFunctions {
 		return fileName;
 	}
 
+	/**
+	 * Use this method to copy file from one folder to other with username and password authentication.
+	 * 
+	 * @param sourceFilePath
+	 * This is the path of the file including filename and extension.
+	 * @param destinationFolderPath
+	 * This the folder path where file needs to be copied.
+	 * @param username
+	 * Username for network authentication.
+	 * @param password
+	 * Password for the user account with the username.
+	 */
 	public void copyFile(String sourceFilePath, String destinationFolderPath, String username, String password) {
 
 		Map<String, String> env = new HashMap<>();

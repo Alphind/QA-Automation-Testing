@@ -70,6 +70,7 @@ public class CommonFunctions extends TestBase {
 	
 	public void sendKeys(WebElement element, String name, String value) {
 		element.sendKeys(value);
+		if(!name.equalsIgnoreCase("PASSWORD"))
 		report(LogStatus.INFO, "Entered '" + value + "' in " + name);
 	}
 
@@ -169,7 +170,14 @@ public class CommonFunctions extends TestBase {
 	public String getText(WebElement ele) {
 		return ele.getText();
 	}
-
+	
+	//created by nandhalala
+	//To get attribute value from element
+	public String getAttribute(WebElement ele, String attributeName) {
+		return ele.getAttribute(attributeName);
+	}
+	
+	//created by nandhalala
 	public void waitForLoadingToDisappear() {
 		if(driver.findElement(By.xpath("//div[contains(text(),'Loading')]"))
 				.isDisplayed()) {

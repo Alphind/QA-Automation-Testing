@@ -1,5 +1,6 @@
 package org.alphind.alphamcs.test;
 
+import org.testng.annotations.Test;
 import org.alphind.alphamcs.base.TestBase;
 import org.alphind.alphamcs.pages.MCOCMS1500Page;
 import org.alphind.alphamcs.pages.MCOClaimMaintenancePage;
@@ -7,7 +8,7 @@ import org.alphind.alphamcs.pages.MCOHomePage;
 import org.alphind.alphamcs.pages.MCOLoginPage;
 import org.alphind.alphamcs.util.DBUtil;
 import org.alphind.alphamcs.util.FileUtil;
-import org.testng.annotations.Test;
+
 
 import com.relevantcodes.extentreports.LogStatus;
 
@@ -22,6 +23,9 @@ public class ClaimTest extends TestBase {
 
 	String userName;
 	String passWord;
+	
+	String networkUserName;
+	String networkPassWord;
 
 	@Test
 	public void viewClaim() {
@@ -55,6 +59,9 @@ public class ClaimTest extends TestBase {
 	@Test
 	public void createCMS1500Claim() {
 
+		userName = envConfig.getProperty("userName");
+		passWord = envConfig.getProperty("password");
+		
 		report(LogStatus.INFO, "Verify whether able to create a new CMS 1500 claim.");
 
 		loginPage = new MCOLoginPage(driver);
@@ -77,7 +84,7 @@ public class ClaimTest extends TestBase {
 			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
 		}
 
-		String claimnumber = cms1500page.createClaim();
+		String claimnumber = cms1500page.createAndSubmitClaim();
 
 		String mcsnumber = claimnumber.replaceAll("[^0-9]", "");
 
@@ -102,16 +109,22 @@ public class ClaimTest extends TestBase {
 	}
 
 	@Test
-	public void incomingFile837P() {
+	public void EDIincomingFile837PTest() {
 
 		userName = envConfig.getProperty("userName");
 		passWord = envConfig.getProperty("password");
+		
+		networkUserName = envConfig.getProperty("networkUserName");
+		networkPassWord = envConfig.getProperty("networkPassWord");
 
 		report(LogStatus.INFO, "Verify end to end processing for incoming837p File");
 
 		fileUtil = new FileUtil();
 		dbUtil = new DBUtil();
 		String incoming837pFilePath = "testData\\EDI_Files\\" + dataMap.get("EDIfileName");
+		
+		System.out.println(incoming837pFilePath);
+		
 		String conStr = envConfig.getProperty("devDBConnectionString");
 
 		String testSFTPFilePath = envConfig.getProperty("testSFTPFilePath");
@@ -119,28 +132,36 @@ public class ClaimTest extends TestBase {
 		String sandhillsAcceptFolderPath = envConfig.getProperty("sandhillsAcceptFolderPath");
 		String encDevSandhillsAcceptFolderPath = envConfig.getProperty("encDevSandhillsAcceptFolderPath");
 
+		//Copy file from test data to \\10.0.82.211->sftp->Test_Folders->MCS_Folders->1006->in->test folder
 		fileUtil.copyFile(incoming837pFilePath, testSFTPFilePath + "\\SingleClaimIncoming837p.jci");
 		report(LogStatus.PASS, "Incoming 837 file placed at folder -" + testSFTPFilePath);
 
+		//Verify file processed from \\10.0.82.211->sftp->Test_Folders->MCS_Folders->1006->in->test folder
 		if (fileUtil.isFileProcessed("SingleClaimIncoming837p", testSFTPFilePath, 20)) {
 			report(LogStatus.PASS, "File processed from folder -" + testSFTPFilePath);
 
+			//Verify processed file present \\10.0.82.211->sftp->Test_Folders->MCS_Folders->1006->in->test->1006->in->test->archive folders
 			if (!(fileUtil.findFile("SingleClaimIncoming837p", testSFTPArchiveFolderPath).equals("File Not Found"))) {
 				report(LogStatus.PASS, "File found in folder -" + testSFTPArchiveFolderPath);
 
 				String acceptedXMLFileName = fileUtil.findFile("SingleClaimIncoming837p", sandhillsAcceptFolderPath, 5);
 
+				//Verify xml file generated in \\10.0.82.211->sftp->Test_Folders->MCS_Folders->SANDHILLS_ACCEPT_TEST folder
 				if (!(acceptedXMLFileName.equals("File Not Found"))) {
 					report(LogStatus.PASS, "Accepted xml file  -" + acceptedXMLFileName);
 
 					String acceptedXMLFilePath = sandhillsAcceptFolderPath + "\\" + acceptedXMLFileName;
 					String acceptedXMLFilePathDest = encDevSandhillsAcceptFolderPath + "\\" + acceptedXMLFileName;
 
+					//Copy xml file to \\192.168.10.93->d$->sftp->sandhills_accept
 					fileUtil.copyFile(acceptedXMLFilePath, acceptedXMLFilePathDest);
+					fileUtil.findFile(acceptedXMLFileName, encDevSandhillsAcceptFolderPath, 1);
 					report(LogStatus.PASS, "Incoming 837 file placed at folder -" + encDevSandhillsAcceptFolderPath);
 
 					dbUtil.executeSP(conStr, "asp_837_process_wrapper");
 					report(LogStatus.PASS, "Executed wrapper - asp_837_process_wrapper");
+					
+					//Verify file processed from \\192.168.10.93->d$->sftp->sandhills_accept
 					if (fileUtil.isFileProcessed(acceptedXMLFileName, encDevSandhillsAcceptFolderPath, 30)) {
 						report(LogStatus.PASS, "File processed from folder -" + encDevSandhillsAcceptFolderPath);
 

@@ -8,8 +8,8 @@
           <include name="suiteSetup"/>
           <include name="loadBaseUrl"/>
           <include name="screenshotAndDeleteCookies"/>
-          <include name="incomingFile837P"/>
           <include name="suiteTearDown"/>
+          <include name="createCMS1500Claim"/>
         </methods>
       </class> <!-- org.alphind.alphamcs.test.ClaimTest -->
     </classes>

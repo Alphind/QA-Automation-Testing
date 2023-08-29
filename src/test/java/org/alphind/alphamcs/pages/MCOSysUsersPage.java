@@ -10,6 +10,7 @@ import org.openqa.selenium.support.PageFactory;
 
 import com.relevantcodes.extentreports.LogStatus;
 
+//Created by Nandhalala
 public class MCOSysUsersPage extends CommonFunctions {
 
 	private WebDriver driver;
@@ -131,8 +132,8 @@ public class MCOSysUsersPage extends CommonFunctions {
 		
 	}
 	
-	//Implementations
 	
+	//Created by Nandhalala
 	public boolean isSystemUserPageDisplayed() {
 		
 		if(sysUserPageHeading.isDisplayed()) {
@@ -146,6 +147,7 @@ public class MCOSysUsersPage extends CommonFunctions {
 		return false;
 	}
 	
+	//Created by Nandhalala
 	private void clickCreate() {
 		
 		waitUntilClickable(createButton, 30);
@@ -157,6 +159,7 @@ public class MCOSysUsersPage extends CommonFunctions {
 		click(createButton, "Create Button");
 	}
 	
+	//Created by Nandhalala
 	public String[] createNewSystemUser() {
 		
 		waitForLoadingToDisappear();
@@ -228,6 +231,7 @@ public class MCOSysUsersPage extends CommonFunctions {
 	}
 	
 	
+	//Created by Nandhalala
 	public void filterUserWithId(String userId) {
 		
 		click(filterButton, "Filter Button");
