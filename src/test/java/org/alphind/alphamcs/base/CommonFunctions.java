@@ -186,4 +186,14 @@ public class CommonFunctions extends TestBase {
 		}
 	}
 	
+	public String changeDBDateToApplicationDateFormat(String dateFromDB) {
+		
+		String[] date = dateFromDB.split(" ");
+		
+		SimpleDateFormat simpledate = new SimpleDateFormat("MM/dd/YYYY");
+        
+       return  simpledate.format(java.sql.Date.valueOf(date[0]));
+		
+	}
+	
 }

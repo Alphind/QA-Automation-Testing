@@ -38,6 +38,9 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 	@FindBy(xpath = "//label[text()=\"Adjustment Reasons:\"]/following-sibling::span")
 	private WebElement adjustmentReason;
 	
+	@FindBy(xpath = "//span[text()=' Close ']/parent::button")
+	private WebElement quickVieCloseButton;
+	
 	public MCOClaimMaintenancePage(WebDriver driver){
 		
 		this.driver = driver;
@@ -95,6 +98,11 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 		System.out.println(status + "\n" + reason);
 		report(LogStatus.INFO,"The status of claim Header "+claimHeaderId+" is "+status+
 				" with reason : "+reason);
+		click(quickVieCloseButton, "Close");
+		
+		waitForLoadingToDisappear();
+		
+		
 	}
 	
 	
@@ -102,6 +110,10 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 	public void searchWithMCSNumberAndViewClaim(String mcsnumber) {
 		
 		putStaticWait(2);
+		
+		if(!getText(filterMyMCSClaimNumber).equals(""))
+			filterMyMCSClaimNumber.clear();
+		
 		sendKeys(filterMyMCSClaimNumber, "My MCS Claim Number", mcsnumber);
 		putStaticWait(2);
 		waitUntilClickable(filterSearchButton, 30);
@@ -120,6 +132,13 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 		System.out.println(status + "\n" + reason);
 		report(LogStatus.INFO,"The status of claim Header "+mcsnumber+" is "+status+
 				" with reason : "+reason);
+		
+		click(quickVieCloseButton, "Close");
+		
+		waitForLoadingToDisappear();
+		
+		putStaticWait(20);
+		
 	}
 	
 }
