@@ -5,12 +5,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.codec.binary.Base64;
 import org.alphind.alphamcs.pages.MCOLoginPage;
+import org.alphind.alphamcs.util.ConfigurationReader;
 import org.alphind.alphamcs.util.ExcelUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,11 +42,18 @@ import com.relevantcodes.extentreports.LogStatus;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 /**
+ * Copyright (C) 2023  Alphind Solution Software Pvt. Ltd. - All Rights Reserved.
+ * 
+ * created by  Abhishek.K.
+ * 
+ * You may use, distribute and modify this code for internal purpose,  however, distribution outside the organization     
+ * is prohibited without prior and proper license agreement
+ * 
  * The TestBase class is the base class to fetch environment specific
  * configuration parameters from Jenkins/Maven. Based on the parameters, it
  * performs the browser setup and tear-down functions.
  * 
- * @author Abhishek.K
+ * 
  */
 
 public class TestBase {
@@ -49,6 +62,9 @@ public class TestBase {
 	public static Properties envConfig;
 	public static String[][] testData;
 	public static Map<String, String> dataMap;
+	
+	public static List<Map<String, String>> dataMapList;
+	
 	WebDriverWait wait;
 
 	public static ExtentReports report;
@@ -59,10 +75,12 @@ public class TestBase {
 
 	// Environment value fetched from POM with 'staging' and 'production' being the
 	// valid values
-	public static final String ENV = System.getProperty("env");// , "Production");
+	//public static final String ENV = System.getProperty("env");// , "Production");
+	public static final String ENV = ConfigurationReader.getEnvironment();// , "Production");
 
 	// BROWSER value fetched from POM with Chrome being the default value
-	private static final String BROWSER = System.getProperty("browser");// , "Chrome");
+	//private static final String BROWSER = System.getProperty("browser");// , "Chrome");
+	private static final String BROWSER = ConfigurationReader.getBrowser();
 
 	// Automation suite setup method to configure and instantiate a particular
 	// browser
@@ -70,12 +88,15 @@ public class TestBase {
 	public void suiteSetup() throws Exception {
 
 		// Browser configuration - can add more browsers and remote driver here
+		System.out.println(BROWSER);
 		if (BROWSER.equals("Firefox")) {
 			WebDriverManager.firefoxdriver().setup(); // can also use set property method for browser executables
 			driver = new FirefoxDriver();
 		} else if (BROWSER.equals("Chrome")) {
 			WebDriverManager.chromedriver().setup();
 			ChromeOptions options = new ChromeOptions();
+			options.addArguments("--disable-notifications");
+			options.addArguments("--disable-geolocation");
 			options.addArguments("--disable-notifications");
 			driver = new ChromeDriver(options);
 		} else if (BROWSER.equals("IE")) {
@@ -93,7 +114,7 @@ public class TestBase {
 		// Setting WebDriverWait with max timeout value of 20 seconds
 		wait = new WebDriverWait(driver, 20);
 
-		System.out.println(ENV);
+		//System.out.println(ENV);
 		// Environment specific properties file loading
 		InputStream configFile = new FileInputStream(
 				System.getProperty("user.dir") + "\\config\\" + ENV + ".properties");
@@ -146,12 +167,109 @@ public class TestBase {
 	public void readTestDataInMap(String methodName) throws Exception {
 
 		dataMap = ExcelUtil.getTestCaseDataInMap("testData//AlphaPlusTestData.xlsx", "testDataSheet", methodName);
+		dataMapList = ExcelUtil.getTestCasesDataInMap("testData//AlphaPlusTestData.xlsx", "testDataSheet", methodName);
 		// return dataMap;
 	}
 
 	public void report(com.relevantcodes.extentreports.LogStatus logStatus, String message) {
-		test.log(logStatus, message);
-		log.info(message);
+		
+		switch (logStatus) {
+		case ERROR:
+			break;
+		case FAIL:{
+			try {
+				File scrFile = ((TakesScreenshot) driver).
+						getScreenshotAs(OutputType.FILE);
+				
+				File destination = new File(System.getenv("user.dir")+
+						"\\errorScreenshots\\ Failed" + ".png");
+				
+				FileUtils.copyFile(scrFile, destination);
+				
+				FileInputStream fis = new FileInputStream(destination);
+				
+				fis.read();
+				
+				byte[] bytes = Files.readAllBytes(destination.toPath());
+				
+				String encodedBase64 = new String(Base64.encodeBase64String(bytes));
+				
+				fis.close();
+				
+				test.log(logStatus, message);
+				
+				log.info(message);
+				
+				test.log(logStatus, 
+						"<img src = \"data:image/png;base64,"+encodedBase64.toString()+
+						"\" width=\"1200\" height=\"900\"/>");
+				
+				log.info("<img src = \"data:image/png;base64,"+encodedBase64+"\" "
+						+ "width=\"800\" height=\"400\"/>");
+				
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+				
+			}
+		}
+			break;
+		case FATAL:
+			break;
+		case INFO:{
+			test.log(logStatus, message);
+			log.info(message);
+		}
+			break;
+		case PASS:{
+			test.log(logStatus, message);
+			log.info(message);
+		}
+			break;
+		case SKIP:
+			break;
+		case UNKNOWN:
+			break;
+		case WARNING:
+			break;
+		default:
+			break;
+		
+		}
+		
+//		if(logStatus.equals(LogStatus.FAIL) || logStatus == LogStatus.FAIL) {
+//			try {
+//				String datetime = new SimpleDateFormat("YYYY-MM-dd HH-mm-ss z")
+//						.format(new Date());
+//				
+//				File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+//				File destination = new File("errorScreenshots\\ Failed "+datetime + "- .jpg");
+//				FileUtils.copyFile(scrFile, 
+//						destination);
+//				FileInputStream fis = new FileInputStream(destination);
+//				
+//				byte [] filebytes = new byte[(int)destination.length()];
+//				
+//				fis.read();
+//				
+//				String encodedBase64 = new String(Base64.encodeBase64String(filebytes));
+//				
+//				fis.close();
+//				
+//				test.log(logStatus, message);
+//				log.info(message);
+//				
+//				test.log(logStatus, encodedBase64);
+//				log.info( encodedBase64);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}else {
+//			test.log(logStatus, message);
+//			log.info(message);
+//		}
+		
 	}
 
 }

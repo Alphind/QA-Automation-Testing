@@ -17,7 +17,14 @@ import java.util.stream.Collectors;
 import org.alphind.alphamcs.base.CommonFunctions;
 import org.apache.commons.io.FileUtils;
 
-;
+/** Copyright (C) 2023  Alphind Solution Software Pvt. Ltd. - All Rights Reserved.
+ * 
+ *  created by  Abhishek.K.
+ *  
+ *  You may use, distribute and modify this code for internal purpose,  however, distribution outside the organization     
+ *  is prohibited without prior and proper license agreement
+ *  
+ */
 
 public class FileUtil extends CommonFunctions {
 

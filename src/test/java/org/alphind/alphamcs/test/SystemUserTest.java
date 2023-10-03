@@ -1,12 +1,6 @@
 package org.alphind.alphamcs.test;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
-import java.util.Properties;
-
 import org.alphind.alphamcs.base.TestBase;
 import org.alphind.alphamcs.pages.MCOHomePage;
 import org.alphind.alphamcs.pages.MCOLoginPage;
@@ -15,6 +9,15 @@ import org.alphind.alphamcs.util.DBUtil;
 import org.testng.annotations.*;
 
 import com.relevantcodes.extentreports.LogStatus;
+
+/** Copyright (C) 2023  Alphind Solution Software Pvt. Ltd. - All Rights Reserved.
+ * 
+ *  created by  Nandhalala.
+ *  
+ *  You may use, distribute and modify this code for internal purpose,  however, distribution outside the organization     
+ *  is prohibited without prior and proper license agreement
+ *  
+ */
 
 public class SystemUserTest extends TestBase {
 

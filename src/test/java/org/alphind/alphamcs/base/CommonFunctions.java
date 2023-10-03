@@ -19,12 +19,18 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.relevantcodes.extentreports.LogStatus;
 
-/**
+/** Copyright (C) 2023  Alphind Solution Software Pvt. Ltd. - All Rights Reserved.
+ * 
+ * created by  Abhishek.K.
+ * 
+ * You may use, distribute and modify this code for internal purpose,  however, distribution outside the organization     
+ * is prohibited without prior and proper license agreement
+ * 
  * The TestBase class is the base class to fetch environment specific
  * configuration parameters from Jenkins/Maven. Based on the parameters, it
  * performs the browser setup and tear-down functions.
  * 
- * @author Abhishek.K
+ * 
  */
 
 public class CommonFunctions extends TestBase {

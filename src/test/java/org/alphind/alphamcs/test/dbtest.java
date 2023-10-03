@@ -1,7 +1,6 @@
 package org.alphind.alphamcs.test;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Date;
@@ -10,9 +9,20 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Properties;
 
+import org.alphind.alphamcs.base.TestBase;
 import org.alphind.alphamcs.util.DBUtil;
+import org.testng.annotations.Test;
 
-public class dbtest {
+/** Copyright (C) 2023  Alphind Solution Software Pvt. Ltd. - All Rights Reserved.
+ * 
+ *  created by  Nandhalala.
+ *  
+ *  You may use, distribute and modify this code for internal purpose,  however, distribution outside the organization     
+ *  is prohibited without prior and proper license agreement
+ *  
+ */
+
+public class dbtest extends TestBase{
     
     
     public static void main(String[] args) throws IOException, ParseException {
@@ -63,6 +73,25 @@ public class dbtest {
        
        
         
+	}
+    
+    @Test
+    public void sample() {
+
+		for (int i = 0; i < dataMapList.size(); i++) {
+
+			dataMap = dataMapList.get(i);
+
+			// Your test logic goes here
+
+			System.out.println("Test execution #" + (i + 1));
+
+			System.out.println(dataMap.get("gender"));
+
+			// test logic ends here
+
+		}
+
 	}
 	
 	

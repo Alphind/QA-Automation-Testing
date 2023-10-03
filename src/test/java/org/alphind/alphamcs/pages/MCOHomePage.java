@@ -9,6 +9,15 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+/** Copyright (C) 2023  Alphind Solution Software Pvt. Ltd. - All Rights Reserved.
+ * 
+ *  created by  Nandhalala.
+ *  
+ *  You may use, distribute and modify this code for internal purpose,  however, distribution outside the organization     
+ *  is prohibited without prior and proper license agreement
+ *  
+ */
+
 public class MCOHomePage extends CommonFunctions {
 
 	WebDriver driver;
@@ -89,11 +98,11 @@ public class MCOHomePage extends CommonFunctions {
 //		waitUntilClickable(createButton, 30);
 //	}
 
-	public void naviagteToUB04() {
-		click(financeLink, "Finance Link");
-		click(UB04Link, "UB-04");
-		waitUntilClickable(createButton, 30);
-	}
+//	public void naviagteToUB04() {
+//		click(financeLink, "Finance Link");
+//		click(UB04Link, "UB-04");
+//		waitUntilClickable(createButton, 30);
+//	}
 
 	//Created by Nandhalala
 	//To click the master link
@@ -172,6 +181,19 @@ public class MCOHomePage extends CommonFunctions {
 		click(CMS1500Link, "CMS 1500");
 		waitForLoadingToDisappear();
 		return new MCOCMS1500Page(driver);
+		
+	}
+	
+	public MCOUB04Page navigateToUB04Page() {
+		
+			if(!UB04Link.isDisplayed()) {
+				clickFinance();
+			}
+			waitForLoadingToDisappear();
+			waitUntilClickable(UB04Link, 30);
+			click(UB04Link, "UB-04");
+			waitForLoadingToDisappear();
+			return new MCOUB04Page(driver);
 		
 	}
 	

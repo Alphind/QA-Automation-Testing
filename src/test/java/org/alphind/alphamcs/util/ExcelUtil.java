@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -14,6 +15,15 @@ import com.codoid.products.exception.FilloException;
 import com.codoid.products.fillo.Connection;
 import com.codoid.products.fillo.Fillo;
 import com.codoid.products.fillo.Recordset;
+
+/** Copyright (C) 2023  Alphind Solution Software Pvt. Ltd. - All Rights Reserved.
+ * 
+ *  created by  Abhishek.K.
+ *  
+ *  You may use, distribute and modify this code for internal purpose,  however, distribution outside the organization     
+ *  is prohibited without prior and proper license agreement
+ *  
+ */
 
 public class ExcelUtil {
 	private static XSSFSheet ExcelWSheet;
@@ -122,5 +132,138 @@ public class ExcelUtil {
 		return status;
 		
 	}
+	
+	public static List<Map<String, String>> getTestCasesDataInMap(String filePath, String sheetName, 
+			String methodName) {
+
+		// Create Fillo instance
+
+		Fillo fillo = new Fillo();
+ 
+		// Create Connection object
+
+		Connection connection = null;
+ 
+		// Create HashMap to store the data
+
+		// Map<String, String> dataMap = new HashMap<>();
+
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+ 
+		try {
+
+			// Open Excel file
+
+			connection = fillo.getConnection(filePath);
+
+			// Execute query to fetch all data from the sheet
+
+			String query = "SELECT * FROM " + sheetName + " where testName = '" + methodName + "'";
+
+			Recordset recordset = connection.executeQuery(query);
+
+			// Iterate through each row
+
+			while (recordset.next()) {
+
+				ArrayList<String> collection = recordset.getFieldNames();
+
+				Map<String, String> dataMap = new HashMap<>();
+
+				int size = collection.size();
+
+				for (int i = 0; i <= (size - 1); i++) {
+
+					String key = collection.get(i);
+
+					String value = recordset.getField(key);
+
+					// Store the key-value pair in the map
+
+					dataMap.put(key, value);
+
+				}
+
+				list.add(dataMap);
+
+				if (connection != null) {
+
+					connection.close();
+
+				}
+
+			}
+
+			// Print the map
+
+//			for (Map.Entry<String, String> entry : dataMap.entrySet()) {
+
+//				System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+
+//			}
+
+		} catch (FilloException e) {
+
+			e.printStackTrace();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		}
+
+		return list;
+
+	}
+	
+	public static Map<String, String> getDataFromExcel(String filePath, String sheetName, 
+			String columnName) {
+
+		// Create Fillo instance
+		Fillo fillo = new Fillo();
+
+		// Create Connection object
+		Connection connection = null;
+
+		// Create HashMap to store the data
+		Map<String, String> dataMap = new HashMap<>();
+
+		try {
+			// Open Excel file
+			connection = fillo.getConnection(filePath);
+
+			// Execute query to fetch all data from the sheet
+			String query = "SELECT * FROM " + sheetName + " where testName = '" + columnName + "'";
+			Recordset recordset = connection.executeQuery(query);
+
+			// Iterate through each row
+			while (recordset.next()) {
+				ArrayList<String> collection = recordset.getFieldNames();
+				int size = collection.size();
+				for (int i = 0; i <= (size - 1); i++) {
+					String key = collection.get(i);
+					String value = recordset.getField(key);
+
+					// Store the key-value pair in the map
+					dataMap.put(key, value);
+				}
+
+				if (connection != null) {
+					connection.close();
+				}
+			}
+
+			// Print the map
+//			for (Map.Entry<String, String> entry : dataMap.entrySet()) {
+//				System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+//			}
+		} catch (FilloException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return dataMap;
+	}
+
 	
 }
