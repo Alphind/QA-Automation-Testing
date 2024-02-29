@@ -133,7 +133,8 @@ public class ExcelUtil {
 		
 	}
 	
-	public static List<Map<String, String>> getTestCasesDataInMap(String filePath, String sheetName, 
+	public static List<Map<String, String>> getTestCasesDataInMap(String filePath, 
+			String sheetName, 
 			String methodName) {
 
 		// Create Fillo instance
@@ -216,7 +217,8 @@ public class ExcelUtil {
 
 	}
 	
-	public static Map<String, String> getDataFromExcel(String filePath, String sheetName, 
+	public static Map<String, String> getDataFromExcel(String filePath, 
+			String sheetName, 
 			String columnName) {
 
 		// Create Fillo instance
@@ -265,5 +267,89 @@ public class ExcelUtil {
 		return dataMap;
 	}
 
+	
+	public static List<Map<String, String>> getTestCasesDataInMap(String filePath, 
+			String sheetName, String columnname, String columnvalue) {
+
+		// Create Fillo instance
+
+		Fillo fillo = new Fillo();
+ 
+		// Create Connection object
+
+		Connection connection = null;
+ 
+		// Create HashMap to store the data
+
+		// Map<String, String> dataMap = new HashMap<>();
+
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		
+		try {
+
+			// Open Excel file
+
+			connection = fillo.getConnection(filePath);
+
+			// Execute query to fetch all data from the sheet
+
+			String query = "SELECT * FROM " + sheetName +
+					" where " + columnname + " = '" + columnvalue + "'";
+
+			Recordset recordset = connection.executeQuery(query);
+
+			// Iterate through each row
+
+			while (recordset.next()) {
+
+				ArrayList<String> collection = recordset.getFieldNames();
+
+				Map<String, String> dataMap = new HashMap<>();
+
+				int size = collection.size();
+
+				for (int i = 0; i <= (size - 1); i++) {
+
+					String key = collection.get(i);
+
+					String value = recordset.getField(key);
+
+					// Store the key-value pair in the map
+
+					dataMap.put(key, value);
+
+				}
+
+				list.add(dataMap);
+
+				if (connection != null) {
+
+					connection.close();
+
+				}
+
+			}
+
+			// Print the map
+
+//			for (Map.Entry<String, String> entry : dataMap.entrySet()) {
+
+//				System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+
+//			}
+
+		} catch (FilloException e) {
+
+			e.printStackTrace();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		}
+
+		return list;
+
+	}
 	
 }

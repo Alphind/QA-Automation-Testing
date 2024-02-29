@@ -2,6 +2,7 @@ package org.alphind.alphamcs.pages;
 
 import static org.testng.Assert.assertEquals;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import org.alphind.alphamcs.base.CommonFunctions;
 import org.alphind.alphamcs.exception.CannotCreateClaimException;
 import org.alphind.alphamcs.exception.CannotUpdateClaimException;
 import org.alphind.alphamcs.util.DBUtil;
+import org.alphind.alphamcs.util.ExcelUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -18,6 +20,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+import com.github.dockerjava.transport.DockerHttpClient.Request.Method;
 import com.relevantcodes.extentreports.LogStatus;
 
 /** Copyright (C) 2023  Alphind Solution Software Pvt. Ltd. - All Rights Reserved.
@@ -30,21 +33,19 @@ import com.relevantcodes.extentreports.LogStatus;
  */
 
 public class MCOCMS1500Page extends CommonFunctions {
-
+	
 	WebDriver driver;
 	static String patientLastName;
 	static String patientFirstName;
-
+	
 	@SuppressWarnings("unused")
 	private static final Logger log = LogManager.getLogger(MCOCMS1500Page.class);
-
+	
 	@FindBy(xpath = "//div[contains(text(),\"CMS 1500\")]")
 	private WebElement cms1500heading;
 	
 	@FindBy(xpath = "//span[contains(text(),'Create')]/parent::button")
 	WebElement createButton;
-	
-
 	
 	//patient search elements
 	@FindBy(xpath = "(//span[contains(text(),'Search ')]/parent::button)[1]")
@@ -507,7 +508,7 @@ public class MCOCMS1500Page extends CommonFunctions {
 	private WebElement unsavedChagesCancel;
 	
 	@FindBy(xpath = "//button[text()='×']")
-	private WebElement unsavedChagesCloase;
+	private WebElement unsavedChagesClose;
 	
 	
 	
@@ -563,7 +564,13 @@ public class MCOCMS1500Page extends CommonFunctions {
 	
     @FindBy (xpath = "//input[@ng-reflect-name='Srvc_ren_npi_32']")
     private WebElement renderingNpi;
-	
+    
+    @FindBy(xpath = "//mat-select[@formcontrolname='bp_type']")
+    private WebElement medicaidDropDown;
+    
+    @FindBy(xpath = "//span[contains(text(),'Medicaid(Except TP PH)') and @class='mat-option-text']")
+	private WebElement medicaidexcepttpphDropdownOption;
+    
 	////////////////// Implementations
 
 	public MCOCMS1500Page(WebDriver driver) {
@@ -605,7 +612,7 @@ public class MCOCMS1500Page extends CommonFunctions {
 	}
 	
 	//Created by Nandhalala
-	public String createAndSubmitClaim() {
+	public String createAndSubmitClaim(String className, String claimID) {
 		
 		String patientid = dataMap.get("patientid");
 		String patientRelationshipToInsured = dataMap.get("PatientRelationshipToInsured");
@@ -658,20 +665,20 @@ public class MCOCMS1500Page extends CommonFunctions {
 		String authNumber = dataMap.get("priorAuthorizationNumber");
 		String providerID = dataMap.get("providerID");
 		String siteid = dataMap.get("siteID");
-		String serviceFromDate = dataMap.get("serviceFromDate");
-		String serviceToDate = dataMap.get("serviceToDate"); 
-		String POS = dataMap.get("POS");
-		String renderingNPIType = dataMap.get("renderingNPItype");
-		String renderingNPI = dataMap.get("renderingNPI");
-		String procCode = dataMap.get("procCode");
-		String mod1 = dataMap.get("modifier1");
-		String mod2 = dataMap.get("modifier2");
-		String mod3 = dataMap.get("modifier3");
-		String mod4 = dataMap.get("modifier4");
-		String serviceAmt = dataMap.get("serviceAmt");
-		String daysUnits = dataMap.get("dayunits");
-		String diagnosispointer = dataMap.get("diagnosispointer");
-		String renderingtaxonomyCode = dataMap.get("renderingtaxonomyCode");
+//		String serviceFromDate = dataMap.get("serviceFromDate");
+//		String serviceToDate = dataMap.get("serviceToDate"); 
+//		String POS = dataMap.get("POS");
+//		String renderingNPIType = dataMap.get("renderingNPItype");
+//		String renderingNPI = dataMap.get("renderingNPI");
+//		String procCode = dataMap.get("procCode");
+//		String mod1 = dataMap.get("modifier1");
+//		String mod2 = dataMap.get("modifier2");
+//		String mod3 = dataMap.get("modifier3");
+//		String mod4 = dataMap.get("modifier4");
+//		String serviceAmt = dataMap.get("serviceAmt");
+//		String daysUnits = dataMap.get("dayunits");
+//		String diagnosispointer = dataMap.get("diagnosispointer");
+//		String renderingtaxonomyCode = dataMap.get("renderingtaxonomyCode");
 		String patientaccnumber = dataMap.get("patientAccountNumber");
 		String acceptassignment = dataMap.get("acceptAssignment");
 		String physiciansigndate = dataMap.get("physiciansigndate");
@@ -692,10 +699,10 @@ public class MCOCMS1500Page extends CommonFunctions {
 		String physicianphone = dataMap.get("physicianPhone");	
 		String physiciannpi = dataMap.get("physicianNPI");
 		String billingTaxonomyCode = dataMap.get("billingTaxonomyCode");
-		String cobamt = dataMap.get("cobAmount");
-		String coballowableamt = dataMap.get("cobAllowableAmount");
-		String cobReason = dataMap.get("cobReason");
-		String epdst = dataMap.get("epdst");
+//		String cobamt = dataMap.get("cobAmount");
+//		String coballowableamt = dataMap.get("cobAllowableAmount");
+//		String cobReason = dataMap.get("cobReason");
+//		String epdst = dataMap.get("epdst");
 
 		String MyMCSNumber = "";
 		waitUntilClickable(createButton, 30);
@@ -703,6 +710,15 @@ public class MCOCMS1500Page extends CommonFunctions {
 		click(createButton, "Create button");
 		waitForLoadingToDisappear();
 		waitUntilClickable(patientSearchButton, 30);
+		try {
+			if(medicaidDropDown.isDisplayed()) {
+				click(medicaidDropDown, "Medicaid Dropdown");
+				putStaticWait(2);
+				click(medicaidexcepttpphDropdownOption, "Medicaid (Except TP PH)");
+			}
+		}catch (NoSuchElementException e) {
+			
+		}
 		putStaticWait(2);
 		click(patientSearchButton, "Patient Search button");
 		if(patientID.isDisplayed()) {
@@ -1286,10 +1302,33 @@ public class MCOCMS1500Page extends CommonFunctions {
 		click(driver.findElement(By.xpath("//span[contains(text(),'"+siteid+"')]"
 				+ "/parent::mat-option")), siteid);
 		waitForLoadingToDisappear();
-		
-		addService(serviceFromDate, serviceToDate, POS, renderingNPIType, renderingNPI,procCode, mod1, mod2,mod3, mod4,serviceAmt, 
-				daysUnits, diagnosispointer, renderingtaxonomyCode,cobamt,coballowableamt,cobReason,
-				epdst);
+		 List<Map<String, String>> serviceDataMAP = ExcelUtil.getTestCasesDataInMap
+				("testData//AlphaPlusTestData.xlsx", className, "claimID", claimID);
+		 Map< String, String> service ;
+		 for(int i = 0 ; i < serviceDataMAP.size() ; i++) {
+			 service = serviceDataMAP.get(i);
+			 String serviceFromDate = service.get("serviceFromDate");
+				String serviceToDate = service.get("serviceToDate"); 
+				String POS = service.get("POS");
+				String renderingNPIType = service.get("renderingNPItype");
+				String renderingNPI = service.get("renderingNPI");
+				String procCode = service.get("procCode");
+				String mod1 = service.get("modifier1");
+				String mod2 = service.get("modifier2");
+				String mod3 = service.get("modifier3");
+				String mod4 = service.get("modifier4");
+				String serviceAmt = service.get("serviceAmt");
+				String daysUnits = service.get("dayunits");
+				String diagnosispointer = service.get("diagnosispointer");
+				String renderingtaxonomyCode = service.get("renderingtaxonomyCode");
+				String cobamt = service.get("cobAmount");
+				String coballowableamt = service.get("cobAllowableAmount");
+				String cobReason = service.get("cobReason");
+				String epdst = service.get("epdst");
+				addService(serviceFromDate, serviceToDate, POS, renderingNPIType, renderingNPI,procCode, mod1, mod2,mod3, mod4,serviceAmt, 
+						daysUnits, diagnosispointer, renderingtaxonomyCode,cobamt,coballowableamt,cobReason,
+						epdst);
+		 }
 		
 		click(driver.findElement(By.xpath("//*[@role='alertdialog']")), "Saved successfully");
 		
@@ -1695,11 +1734,15 @@ public class MCOCMS1500Page extends CommonFunctions {
 			sendKeys(renderingTaxonomy, "Taxonomy code", renderingtaxonomyCode);
 			waitForLoadingToDisappear();
 			putStaticWait(2);
-			WebElement renderingtaxonomy = driver.findElement(By.xpath("//span[contains(text(),'"+renderingtaxonomyCode+"')]"));
-			click(renderingtaxonomy, renderingtaxonomyCode);
+			WebElement renderingtaxonomy;
+			try {
+				renderingtaxonomy = driver.findElement(By.xpath("//span[contains(text(),'"+renderingtaxonomyCode+"')]"));
+				click(renderingtaxonomy, renderingtaxonomyCode);
+			}catch(NoSuchElementException e) {
+				report(LogStatus.FAIL,"The rendering taxonomy is not valid for the provider.");
+			}
 			putStaticWait(2);
 		}
-		
 		if(Objects.nonNull(cobamt) && !cobamt.equals("")) {
 			
 			cobbAmount.clear();
@@ -2069,7 +2112,7 @@ public class MCOCMS1500Page extends CommonFunctions {
 	}
 	
 	//Created by Nandhalala
-	public String createAndSaveClaim() {
+	public String createAndSaveClaim(String className, String claimID) {
 			
 			String patientid = dataMap.get("patientid");
 			String patientRelationshipToInsured = dataMap.get("PatientRelationshipToInsured");
@@ -2107,20 +2150,20 @@ public class MCOCMS1500Page extends CommonFunctions {
 			String authNumber = dataMap.get("priorAuthorizationNumber");
 			String providerID = dataMap.get("providerID");
 			String siteid = dataMap.get("siteID");
-			String serviceFromDate = dataMap.get("serviceFromDate");
-			String serviceToDate = dataMap.get("serviceToDate"); 
-			String POS = dataMap.get("POS");
-			String renderingNPIType = dataMap.get("renderingNPItype");
-			String renderingNPI = dataMap.get("renderingNPI");
-			String procCode = dataMap.get("procCode");
-			String mod1 = dataMap.get("modifier1");
-			String mod2 = dataMap.get("modifier2");
-			String mod3 = dataMap.get("modifier3");
-			String mod4 = dataMap.get("modifier4");
-			String serviceAmt = dataMap.get("serviceAmt");
-			String daysUnits = dataMap.get("dayunits");
-			String diagnosispointer = dataMap.get("diagnosispointer");
-			String renderingtaxonomyCode = dataMap.get("renderingtaxonomyCode");
+//			String serviceFromDate = dataMap.get("serviceFromDate");
+//			String serviceToDate = dataMap.get("serviceToDate"); 
+//			String POS = dataMap.get("POS");
+//			String renderingNPIType = dataMap.get("renderingNPItype");
+//			String renderingNPI = dataMap.get("renderingNPI");
+//			String procCode = dataMap.get("procCode");
+//			String mod1 = dataMap.get("modifier1");
+//			String mod2 = dataMap.get("modifier2");
+//			String mod3 = dataMap.get("modifier3");
+//			String mod4 = dataMap.get("modifier4");
+//			String serviceAmt = dataMap.get("serviceAmt");
+//			String daysUnits = dataMap.get("dayunits");
+//			String diagnosispointer = dataMap.get("diagnosispointer");
+//			String renderingtaxonomyCode = dataMap.get("renderingtaxonomyCode");
 			String patientaccnumber = dataMap.get("patientAccountNumber");
 			String acceptassignment = dataMap.get("acceptAssignment");
 			String physiciansigndate = dataMap.get("physiciansigndate");
@@ -2141,10 +2184,10 @@ public class MCOCMS1500Page extends CommonFunctions {
 			String physicianphone = dataMap.get("physicianPhone");	
 			String physiciannpi = dataMap.get("physicianNPI");
 			String billingTaxonomyCode = dataMap.get("billingTaxonomyCode");
-			String cobamt = dataMap.get("cobAmount");
-			String coballowableamt = dataMap.get("cobAllowableAmount");
-			String cobReason = dataMap.get("cobReason");
-			String epdst = dataMap.get("epdst");
+//			String cobamt = dataMap.get("cobAmount");
+//			String coballowableamt = dataMap.get("cobAllowableAmount");
+//			String cobReason = dataMap.get("cobReason");
+//			String epdst = dataMap.get("epdst");
 
 			String MyMCSNumber = "";
 			waitUntilClickable(createButton, 30);
@@ -2553,9 +2596,37 @@ public class MCOCMS1500Page extends CommonFunctions {
 					+ "/parent::mat-option")), siteid);
 			waitForLoadingToDisappear();
 			
-			addService(serviceFromDate, serviceToDate, POS, renderingNPIType, renderingNPI,procCode, mod1, mod2,mod3, mod4,serviceAmt, 
-					daysUnits, diagnosispointer, renderingtaxonomyCode,cobamt,coballowableamt,cobReason,
-					epdst);
+			List<Map<String, String>> serviceDataMAP = ExcelUtil.getTestCasesDataInMap
+					("testData//AlphaPlusTestData.xlsx", className, "claimID", claimID);
+			 Map< String, String> service ;
+			 for(int i = 0 ; i < serviceDataMAP.size() ; i++) {
+				service = serviceDataMAP.get(i);
+				String serviceFromDate = service.get("serviceFromDate");
+				String serviceToDate = service.get("serviceToDate"); 
+				String POS = service.get("POS");
+				String renderingNPIType = service.get("renderingNPItype");
+				String renderingNPI = service.get("renderingNPI");
+				String procCode = service.get("procCode");
+				String mod1 = service.get("modifier1");
+				String mod2 = service.get("modifier2");
+				String mod3 = service.get("modifier3");
+				String mod4 = service.get("modifier4");
+				String serviceAmt = service.get("serviceAmt");
+				String daysUnits = service.get("dayunits");
+				String diagnosispointer = service.get("diagnosispointer");
+				String renderingtaxonomyCode = service.get("renderingtaxonomyCode");
+				String cobamt = service.get("cobAmount");
+				String coballowableamt = service.get("cobAllowableAmount");
+				String cobReason = service.get("cobReason");
+				String epdst = service.get("epdst");
+				addService(serviceFromDate, serviceToDate, POS, renderingNPIType, renderingNPI,procCode, mod1, mod2,mod3, mod4,serviceAmt, 
+						daysUnits, diagnosispointer, renderingtaxonomyCode,cobamt,coballowableamt,cobReason,
+						epdst);
+			}
+			
+//			addService(serviceFromDate, serviceToDate, POS, renderingNPIType, renderingNPI,procCode, mod1, mod2,mod3, mod4,serviceAmt, 
+//					daysUnits, diagnosispointer, renderingtaxonomyCode,cobamt,coballowableamt,cobReason,
+//					epdst);
 			
 			
 //			click(addService, "Add service");
@@ -2850,7 +2921,7 @@ public class MCOCMS1500Page extends CommonFunctions {
 	
 	
 	//created by Mugundhan
-	public String updateAndSaveCMS1500Claim () {
+	public String updateAndSaveCMS1500Claim (String className, String claimID) {
 
 		String myMCSNumber = dataMap.get("myMCSNumber");
 		String patientSigndate = dataMap.get("patientSigndate");
@@ -3075,7 +3146,7 @@ public class MCOCMS1500Page extends CommonFunctions {
 	    
 	    
 	//created by Mugundhan
-	public String updateAndSubmitCMS1500Claim () {
+	public String updateAndSubmitCMS1500Claim (String className, String claimID) {
 
 
 		String myMCSNumber = dataMap.get("myMCSNumber");
@@ -3130,20 +3201,20 @@ public class MCOCMS1500Page extends CommonFunctions {
 		String authNumber = dataMap.get("priorAuthorizationNumber");
 		String providerID = dataMap.get("providerID");
 		String siteid = dataMap.get("siteID");
-		String serviceFromDate = dataMap.get("serviceFromDate");
-		String serviceToDate = dataMap.get("serviceToDate"); 
-		String POS = dataMap.get("POS");
-		String renderingNPIType = dataMap.get("renderingNPItype");
-		String renderingNPI = dataMap.get("renderingNPI");
-		String procCode = dataMap.get("procCode");
-		String mod1 = dataMap.get("modifier1");
-		String mod2 = dataMap.get("modifier2");
-		String mod3 = dataMap.get("modifier3");
-		String mod4 = dataMap.get("modifier4");
-		String serviceAmt = dataMap.get("serviceAmt");
-		String daysUnits = dataMap.get("dayunits");
-		String diagnosispointer = dataMap.get("diagnosispointer");
-		String renderingtaxonomyCode = dataMap.get("renderingtaxonomyCode");
+//		String serviceFromDate = dataMap.get("serviceFromDate");
+//		String serviceToDate = dataMap.get("serviceToDate"); 
+//		String POS = dataMap.get("POS");
+//		String renderingNPIType = dataMap.get("renderingNPItype");
+//		String renderingNPI = dataMap.get("renderingNPI");
+//		String procCode = dataMap.get("procCode");
+//		String mod1 = dataMap.get("modifier1");
+//		String mod2 = dataMap.get("modifier2");
+//		String mod3 = dataMap.get("modifier3");
+//		String mod4 = dataMap.get("modifier4");
+//		String serviceAmt = dataMap.get("serviceAmt");
+//		String daysUnits = dataMap.get("dayunits");
+//		String diagnosispointer = dataMap.get("diagnosispointer");
+//		String renderingtaxonomyCode = dataMap.get("renderingtaxonomyCode");
 		String patientaccnumber = dataMap.get("patientAccountNumber");
 		String acceptassignment = dataMap.get("acceptAssignment");
 		String physiciansigndate = dataMap.get("physiciansigndate");
@@ -3164,10 +3235,10 @@ public class MCOCMS1500Page extends CommonFunctions {
 		String physicianphone = dataMap.get("physicianPhone");	
 		String physiciannpi = dataMap.get("physicianNPI");
 		String billingTaxonomyCode = dataMap.get("billingTaxonomyCode");
-		String cobamt = dataMap.get("cobAmount");
-		String coballowableamt = dataMap.get("cobAllowableAmount");
-		String cobReason = dataMap.get("cobReason");
-		String epdst = dataMap.get("epdst");
+//		String cobamt = dataMap.get("cobAmount");
+//		String coballowableamt = dataMap.get("cobAllowableAmount");
+//		String cobReason = dataMap.get("cobReason");
+//		String epdst = dataMap.get("epdst");
 	       
 	        //click filter button and search claim with MY MCS #
 	        click(filterButton, "Filter Button");
@@ -3874,9 +3945,41 @@ public class MCOCMS1500Page extends CommonFunctions {
 
 	        putStaticWait(2);
 	        
-	        modifyService(serviceFromDate, serviceToDate, POS, renderingNPIType, renderingNPI, 
-	        		procCode, mod1, mod2,  mod3, mod4, serviceAmt, daysUnits, diagnosispointer, 
-	        		renderingtaxonomyCode, cobamt, coballowableamt, cobReason, epdst);
+	        List<Map<String, String>> serviceDataMAP = ExcelUtil.getTestCasesDataInMap
+					("testData//AlphaPlusTestData.xlsx", className, "claimID", claimID);
+			Map< String, String> service ;
+	        
+			for(int i = 0 ; i < serviceDataMAP.size() ; i++) {
+				service = serviceDataMAP.get(i);
+				String serviceFromDate = service.get("serviceFromDate");
+				String serviceToDate = service.get("serviceToDate"); 
+				String POS = service.get("POS");
+				String renderingNPIType = service.get("renderingNPItype");
+				String renderingNPI = service.get("renderingNPI");
+				String procCode = service.get("procCode");
+				String mod1 = service.get("modifier1");
+				String mod2 = service.get("modifier2");
+				String mod3 = service.get("modifier3");
+				String mod4 = service.get("modifier4");
+				String serviceAmt = service.get("serviceAmt");
+				String daysUnits = service.get("dayunits");
+				String diagnosispointer = service.get("diagnosispointer");
+				String renderingtaxonomyCode = service.get("renderingtaxonomyCode");
+				String cobamt = service.get("cobAmount");
+				String coballowableamt = service.get("cobAllowableAmount");
+				String cobReason = service.get("cobReason");
+				String epdst = service.get("epdst");
+				
+				modifyService(serviceFromDate, serviceToDate, POS, renderingNPIType, 
+						renderingNPI, procCode, mod1, mod2,  mod3, mod4, serviceAmt, 
+						daysUnits, diagnosispointer, renderingtaxonomyCode, cobamt, 
+						coballowableamt, cobReason, epdst);
+				
+			}
+			
+//	        modifyService(serviceFromDate, serviceToDate, POS, renderingNPIType, renderingNPI, 
+//	        		procCode, mod1, mod2,  mod3, mod4, serviceAmt, daysUnits, diagnosispointer, 
+//	        		renderingtaxonomyCode, cobamt, coballowableamt, cobReason, epdst);
 
 //	        click(lineModify,"service line Modify");
 //

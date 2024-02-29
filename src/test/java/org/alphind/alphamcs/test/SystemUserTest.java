@@ -4,6 +4,7 @@ import java.util.Map;
 import org.alphind.alphamcs.base.TestBase;
 import org.alphind.alphamcs.pages.MCOHomePage;
 import org.alphind.alphamcs.pages.MCOLoginPage;
+import org.alphind.alphamcs.pages.HomePage;
 import org.alphind.alphamcs.pages.MCOSysUsersPage;
 import org.alphind.alphamcs.util.DBUtil;
 import org.testng.annotations.*;
@@ -24,8 +25,9 @@ public class SystemUserTest extends TestBase {
 	//private static final Logger log = LogManager.getLogger(AlphaMCSTest.class);
 
 	DBUtil dbUtil;
-	MCOLoginPage loginPage;
-	MCOHomePage homePage;
+	HomePage homePage;
+	MCOLoginPage mcoLoginPage;
+	MCOHomePage mcoHomePage;
 	MCOSysUsersPage SystemUsersPage;
 	
 	String userName = "shc/shctest";
@@ -51,19 +53,19 @@ public class SystemUserTest extends TestBase {
 		
 		report(LogStatus.INFO, "Verify whether able to create a new system user.");
 		
-		loginPage = new MCOLoginPage(driver);
+		homePage = new HomePage(driver);
 		
-		loginPage.selectMCOLogin();
+		mcoLoginPage = homePage.selectMCOLogin();
 		
-		homePage = loginPage.login(userName, passWord);
+		mcoHomePage = mcoLoginPage.login(userName, passWord);
 		
-		if (homePage.isLoginSuccessful()) {
+		if (mcoHomePage.isLoginSuccessful()) {
 			report(LogStatus.PASS, "Login successful with user - " + userName);
 		} else {
 			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
 		}
 		
-		SystemUsersPage = homePage.navigateToSystemUsers();
+		SystemUsersPage = mcoHomePage.navigateToSystemUsers();
 		
 		if(SystemUsersPage.isSystemUserPageDisplayed()) {
 			report(LogStatus.PASS,"System User Page is isplayed");

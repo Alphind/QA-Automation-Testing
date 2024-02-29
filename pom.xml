@@ -28,8 +28,11 @@
             <env>dev</env>
             <browser>Chrome</browser>
          	</systemPropertyVariables>
+         	<suiteXmlFiles>
+            	<suiteXmlFile>testng.xml</suiteXmlFile>
+          	</suiteXmlFiles>
           </configuration>
-        </plugin>
+        </plugin>  
       </plugins>
     </pluginManagement>
   </build>
@@ -116,14 +119,21 @@
 	<artifactId>jcifs-ng</artifactId>
 	<version>1.5.1</version>
 </dependency>
-
-
    
    <dependency>
     <groupId>com.microsoft.sqlserver</groupId>
     <artifactId>mssql-jdbc</artifactId>
     <version>7.0.0.jre8</version>
 </dependency>
-	
+
+<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.30</version>
+    <scope>provided</scope>
+</dependency>
+
+
   </dependencies>
 </project>

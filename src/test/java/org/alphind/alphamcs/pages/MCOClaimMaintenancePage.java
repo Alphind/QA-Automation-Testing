@@ -1,12 +1,15 @@
 package org.alphind.alphamcs.pages;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.alphind.alphamcs.base.CommonFunctions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.PageFactory;
 
 import com.relevantcodes.extentreports.LogStatus;
@@ -44,12 +47,15 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 	private WebElement firstRowRecord;
 	
 	@FindBy(xpath = "//label[text()=\"Status:\"]/following-sibling::span")
-	private WebElement claimStatus;
+	private List<WebElement> claimStatus;
+	
+	@FindBy(xpath = "//label[text()=\"Claim Line ID:\"]/following-sibling::span")
+	private List<WebElement> claimLine;
 	
 	@FindBy(xpath = "//label[text()=\"Adjustment Reasons:\"]/following-sibling::span")
 	private WebElement adjustmentReason;
 	
-	@FindBy(xpath = "//span[text()=' Close ']/parent::button")
+	@FindBy(xpath = "//span[contains(text(),'Close')]/parent::button")
 	private WebElement quickVieCloseButton;
 	
 	public MCOClaimMaintenancePage(WebDriver driver){
@@ -103,16 +109,17 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 		driver.findElement(By.xpath("//span[text()=' Quick View ']/parent::button")).click();
 		waitForLoadingToDisappear();
 		putStaticWait(2);
-		String status = getText(claimStatus);
-		putStaticWait(2);
-		String reason = getText(adjustmentReason);
-		System.out.println(status + "\n" + reason);
-		report(LogStatus.INFO,"The status of claim Header "+claimHeaderId+" is "+status+
-				" with reason : "+reason);
-		click(quickVieCloseButton, "Close");
-		
-		waitForLoadingToDisappear();
-		
+		for(int index = 0 ; index < claimStatus.size() ; index++) {
+			String status = getText(claimStatus.get(index));
+			putStaticWait(2);
+			String reason = getText(adjustmentReason);
+			System.out.println(status + "\n" + reason);
+			report(LogStatus.INFO,"The status of claim Header "+claimHeaderId+" is "+status+
+					" with reason : "+reason);
+			click(quickVieCloseButton, "Close");
+			
+			waitForLoadingToDisappear();
+		}
 		
 	}
 	
@@ -137,25 +144,27 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 		driver.findElement(By.xpath("//span[text()=' Quick View ']/parent::button")).click();
 		waitForLoadingToDisappear();
 		putStaticWait(2);
-		String status = getText(claimStatus);
-		putStaticWait(2);
-		String reason = getText(adjustmentReason);
-		//System.out.print(reason);
-		String [] reasons = null;
-		if(reason.contains("|")) {
-			reasons = reason.split("|");
+		for(int index = 0 ; index < claimStatus.size() ; index++) {
+			String status = getText(claimStatus.get(index));
+			putStaticWait(2);
+			String reason = getText(adjustmentReason);
+			//System.out.print(reason);
+			String [] reasons = null;
+			if(reason.contains("|")) {
+				reasons = reason.split("|");
+			}
+			System.out.println(reasons);
+			
+			System.out.println(status + "\n" + reason);
+			report(LogStatus.INFO,"The status of MY MCS CLAIM # "+mcsnumber+" is "+status+
+					" with reason : "+reason);
+			
+			click(quickVieCloseButton, "Close");
+			
+			waitForLoadingToDisappear();
+			
+			putStaticWait(2);
 		}
-		System.out.println(reasons);
-		
-		System.out.println(status + "\n" + reason);
-		report(LogStatus.INFO,"The status of MY MCS CLAIM # "+mcsnumber+" is "+status+
-				" with reason : "+reason);
-		
-		click(quickVieCloseButton, "Close");
-		
-		waitForLoadingToDisappear();
-		
-		putStaticWait(2);
 		
 	}
 	
@@ -176,57 +185,72 @@ public class MCOClaimMaintenancePage extends CommonFunctions {
 			click(firstRowRecord, mcsnumber);
 			waitForLoadingToDisappear();
 			putStaticWait(2);
-			driver.findElement(By.xpath("//span[text()=' Quick View ']/parent::button")).click();
+			click(driver.findElement(By.xpath("//span[text()=' Quick View ']/parent::button")),"Quick View");
 			waitForLoadingToDisappear();
 			putStaticWait(2);
-			String status = getText(claimStatus);
-			putStaticWait(2);
-			String reason = getText(adjustmentReason);
-			//System.out.print(reason);
-			System.out.println(expectedReason);
-			String [] reasons = null;
-			if(reason.contains("|")) {
-				reasons = reason.split(" ");
-			}
-//			if(Objects.nonNull(reasons))
-//				Arrays.asList(reasons).forEach(rsn -> {System.out.println(rsn);});
-			if(Objects.nonNull(expectedReason) && !expectedReason.equals("")) {
-				if(Objects.isNull(reasons)) {
-					if(reason.replaceAll("[^0=9]", "").equals(expectedReason)) {
-						report(LogStatus.PASS,"The adjustment reason for claim is : "+reason);
-					}else {
-						report(LogStatus.FAIL,"The adjustment reason for claim is : "+reason+" but "
-								+ "the expected reason code is : "+expectedReason);
-					}
-				}else {
-					boolean flag = false;
-					for(int i = 0; i<reasons.length; i++) {
-						if(reasons[i].equals(expectedReason)) {
-							flag = true;
-							break;
-						}
-					}
-					System.out.println(flag);
-					if(flag) {
-						report(LogStatus.PASS,"The adjustment reason for claim is : "+reason);
-					}else {
-						if(reason.equals(null) || reasons.equals("")) {
-							report(LogStatus.FAIL,"The adjustment reason for claim is : Not Adjudicated"
-									+" but the expected reason code is : "+expectedReason);
+			System.out.println(claimStatus.size());
+			for(int index = 0 ; index < claimStatus.size() ; index++) {
+				String lineId = getText(claimLine.get(index));
+				String status = getText(claimStatus.get(index));
+				putStaticWait(2);
+				String reason = getText(adjustmentReason);
+				//System.out.print(reason);
+				System.out.println(expectedReason);
+				String [] reasons = null;
+				if(reason.contains("|")) {
+					reasons = reason.split(" ");
+				}
+//				if(Objects.nonNull(reasons))
+//					Arrays.asList(reasons).forEach(rsn -> {System.out.println(rsn);});
+				if(Objects.nonNull(expectedReason) && !expectedReason.equals("")) {
+					if(Objects.isNull(reasons)) {
+						if(reason.replaceAll("[^0=9]", "").equals(expectedReason)) {
+							report(LogStatus.PASS,"The adjustment reason for claim with My MCS Number "+mcsnumber+" and line id - "+ lineId+" is : "+reason+ " as expected.");
 						}else {
-							report(LogStatus.FAIL,"The adjustment reason for claim is : "+reason
-									+" but the expected reason code is : "+expectedReason);
+							report(LogStatus.FAIL,"The adjustment reason for claim with My MCS Number "+mcsnumber+" and line id - "+ lineId+" is : "+reason+" but "
+									+ "the expected reason code is : "+expectedReason);
 						}
-						
+					}else {
+						boolean flag = false;
+						for(int i = 0; i<reasons.length; i++) {
+							if(reasons[i].equals(expectedReason)) {
+								flag = true;
+								break;
+							}
+						}
+						System.out.println(flag);
+						if(flag) {
+							report(LogStatus.PASS,"The adjustment reason for claim is : "+reason);
+						}else {
+							if(reason.equals(null) || reasons.equals("")) {
+								report(LogStatus.FAIL,"The adjustment reason for claim is : Not Adjudicated"
+										+" but the expected reason code is : "+expectedReason);
+							}else {
+								report(LogStatus.FAIL,"The adjustment reason for claim is : "+reason
+										+" but the expected reason code is : "+expectedReason);
+							}
+							
+						}
 					}
+					
+				}else {
+					if(reason.equals(null) || reasons.equals("")) {
+						report(LogStatus.INFO, "The adjustment reason for claim is with "
+								+ "My MCS Number "+mcsnumber+" and line id - "
+								+ lineId+" is : Not adjudicated");
+					}else {
+						report(LogStatus.INFO, "The adjustment reason for claim is with "
+								+ "My MCS Number "+mcsnumber+" and line id - "
+								+ lineId+" is : "+reason);
+					}
+					
 				}
 				
+				System.out.println(status + "\n" + reason);
+//				report(LogStatus.INFO,"The status of MY MCS CLAIM # "+mcsnumber+" is "+status+
+//						" with reason : "+reason);
+				
 			}
-			
-			System.out.println(status + "\n" + reason);
-//			report(LogStatus.INFO,"The status of MY MCS CLAIM # "+mcsnumber+" is "+status+
-//					" with reason : "+reason);
-			
 			click(quickVieCloseButton, "Close");
 			
 			waitForLoadingToDisappear();

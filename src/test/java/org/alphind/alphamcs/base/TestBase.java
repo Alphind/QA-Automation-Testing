@@ -15,12 +15,13 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.binary.Base64;
-import org.alphind.alphamcs.pages.MCOLoginPage;
+import org.alphind.alphamcs.pages.HomePage;
 import org.alphind.alphamcs.util.ConfigurationReader;
 import org.alphind.alphamcs.util.ExcelUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -71,7 +72,7 @@ public class TestBase {
 	public static ExtentTest test;
 	String reportPath = new File("").getAbsolutePath().toString().trim() + "/reports/";
 
-	private static final Logger log = LogManager.getLogger(MCOLoginPage.class);
+	private static final Logger log = LogManager.getLogger(HomePage.class);
 
 	// Environment value fetched from POM with 'staging' and 'production' being the
 	// valid values
@@ -131,9 +132,16 @@ public class TestBase {
 
 		String baseURL = envConfig.getProperty("baseUrl");
 		driver.get(baseURL);
+		try {
+			driver.switchTo().alert().accept();
+		}catch (NoAlertPresentException e) {
+			e.printStackTrace();
+		}
+		
 		report(LogStatus.INFO, "Opened the url for - " + ENV + " environment - " + baseURL);
 		report(LogStatus.INFO, "Running Test " + method.getName());
-		readTestDataInMap(method.getName());
+		//readTestDataInMap(method.getName());
+		readTestDataInMap(method.getName(), this.getClass().getSimpleName());
 
 	}
 
@@ -171,6 +179,13 @@ public class TestBase {
 		// return dataMap;
 	}
 
+	public void readTestDataInMap(String methodName, String className) throws Exception {
+
+		dataMap = ExcelUtil.getTestCaseDataInMap("testData//AlphaPlusTestData.xlsx", className, methodName);
+		dataMapList = ExcelUtil.getTestCasesDataInMap("testData//AlphaPlusTestData.xlsx", className, methodName);
+		// return dataMap;
+	}	
+	
 	public void report(com.relevantcodes.extentreports.LogStatus logStatus, String message) {
 		
 		switch (logStatus) {
@@ -202,7 +217,7 @@ public class TestBase {
 				
 				test.log(logStatus, 
 						"<img src = \"data:image/png;base64,"+encodedBase64.toString()+
-						"\" width=\"1200\" height=\"900\"/>");
+						"\" width=\"800\" height=\"400\"/>");
 				
 				log.info("<img src = \"data:image/png;base64,"+encodedBase64+"\" "
 						+ "width=\"800\" height=\"400\"/>");
@@ -236,39 +251,6 @@ public class TestBase {
 			break;
 		
 		}
-		
-//		if(logStatus.equals(LogStatus.FAIL) || logStatus == LogStatus.FAIL) {
-//			try {
-//				String datetime = new SimpleDateFormat("YYYY-MM-dd HH-mm-ss z")
-//						.format(new Date());
-//				
-//				File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-//				File destination = new File("errorScreenshots\\ Failed "+datetime + "- .jpg");
-//				FileUtils.copyFile(scrFile, 
-//						destination);
-//				FileInputStream fis = new FileInputStream(destination);
-//				
-//				byte [] filebytes = new byte[(int)destination.length()];
-//				
-//				fis.read();
-//				
-//				String encodedBase64 = new String(Base64.encodeBase64String(filebytes));
-//				
-//				fis.close();
-//				
-//				test.log(logStatus, message);
-//				log.info(message);
-//				
-//				test.log(logStatus, encodedBase64);
-//				log.info( encodedBase64);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}else {
-//			test.log(logStatus, message);
-//			log.info(message);
-//		}
 		
 	}
 

@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="CMS 1500">
+<suite name="MCS Test" parallel = "none">
   <test thread-count="5" name="Test">
     <classes>
       <class name="org.alphind.alphamcs.test.ClaimTest" >
       <methods>
                <include name="createCMS1500Claim" />
-               <exclude name="createSaveCMS1500Claim" />
-               <exclude name="updateAndSubmitCMS1500Claim" />
+               <include name="createSaveCMS1500Claim" />
+               <include name="updateAndSubmitCMS1500Claim" />
+               <include name="viewCMS1500Claim"/>
+       </methods>
+       </class>
+       <class name = "org.alphind.alphamcs.test.UB04ClaimTest" >
+       <methods>
+       		<include name = "createAndSubmitUB04Claim" />
+       		<include name = "createAndSaveUB04Claim" />
+       		<include name = "updateAndSubmitUB04Claim" />
+       		<include name = "updateAndSaveUB04Claim" />
+       		<include name = "copyAndSubmitUB04Claim" />
+       		<include name = "copyAndSaveUB04Claim" />
+       		<include name = "viewUB04Claim"/>
        </methods>
        </class>
     </classes>

@@ -11,6 +11,7 @@ import org.alphind.alphamcs.pages.MCOCMS1500Page;
 import org.alphind.alphamcs.pages.MCOClaimMaintenancePage;
 import org.alphind.alphamcs.pages.MCOHomePage;
 import org.alphind.alphamcs.pages.MCOLoginPage;
+import org.alphind.alphamcs.pages.HomePage;
 import org.alphind.alphamcs.util.DBUtil;
 import org.alphind.alphamcs.util.FileUtil;
 
@@ -29,8 +30,9 @@ import com.relevantcodes.extentreports.LogStatus;
 public class ClaimTest extends TestBase {
 
 	DBUtil dbUtil;
-	MCOLoginPage loginPage;
-	MCOHomePage homePage;
+	HomePage homePage;
+	MCOLoginPage mcoLoginPage;
+	MCOHomePage mcoHomePage;
 	MCOClaimMaintenancePage claimMaintenancepage;
 	MCOCMS1500Page cms1500page;
 	FileUtil fileUtil;
@@ -78,19 +80,19 @@ public class ClaimTest extends TestBase {
 		
 		report(LogStatus.INFO, "Verify whether able to create and submit a new CMS 1500 claim.");
 		
-		loginPage = new MCOLoginPage(driver);
-
-		loginPage.selectMCOLogin();
-
-		homePage = loginPage.login(userName, passWord);
-
-		if (homePage.isLoginSuccessful()) {
+		homePage = new HomePage(driver);
+		
+		mcoLoginPage = homePage.selectMCOLogin();
+		
+		mcoHomePage = mcoLoginPage.login(userName, passWord);
+		
+		if (mcoHomePage.isLoginSuccessful()) {
 			report(LogStatus.PASS, "Login successful with user - " + userName);
 		} else {
 			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
 		}
 
-		cms1500page = homePage.navigateToCMS1500Page();
+		cms1500page = mcoHomePage.navigateToCMS1500Page();
 
 		if (cms1500page.isCMS1500PageDisplayed()) {
 			report(LogStatus.PASS, "CMS 1500 page is displayed");
@@ -101,34 +103,20 @@ public class ClaimTest extends TestBase {
 		List<String> claimnumber = new ArrayList<String>();
 		
 		List<String> mcsnumber = new ArrayList<String>();
-		
-		dataMapList.forEach(list -> {
-			
-			dataMap = list;
-			
-			claimnumber.add(cms1500page.createAndSubmitClaim());
-			
-			int i = claimnumber.size()-1;
-		
-			mcsnumber.add(claimnumber.get(i).replaceAll("[^0-9]", ""));
-			
-			if(!mcsnumber.get(i).equals("")) {
-			
-				report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " 
-				+ mcsnumber.get(i));
-				
-			}else {
-				report(LogStatus.WARNING,"Not able to create claim");
-			}
-			
-		});
-		
-		
-//		for (int i = 0; i < dataMapList.size(); i++) {
+		int previousClaimID = 0;
+//		dataMapList.forEach(list -> {
+//			String claimID = dataMap.get("claimID");
+//			if(previousClaimID < Integer.parseInt(claimID)) {
+//				previousClaimID++;
+//			}
+//			this.getClass().getEnclosingMethod().getName();
+//			dataMap = list;
+//			if(previousClaimID != Integer.parseInt(claimID)) {
+//				
+//			}
+//			claimnumber.add(cms1500page.createAndSubmitClaim(claimID));
 //			
-//			dataMap = dataMapList.get(i);
-//		
-//			claimnumber.add(cms1500page.createAndSubmitClaim());
+//			int i = claimnumber.size()-1;
 //		
 //			mcsnumber.add(claimnumber.get(i).replaceAll("[^0-9]", ""));
 //			
@@ -138,11 +126,38 @@ public class ClaimTest extends TestBase {
 //				+ mcsnumber.get(i));
 //				
 //			}else {
-//				report(LogStatus.FAIL,"Not able to create claim");
+//				report(LogStatus.WARNING,"Not able to create claim");
 //			}
-//
-//		
-//		}
+//			
+//		});
+		String className = this.getClass().getSimpleName();
+//		System.out.println(className);
+		for (int i = 0; i < dataMapList.size(); i++) {
+			
+			dataMap = dataMapList.get(i);
+			
+			String claimID = dataMap.get("claimID");		
+			
+			if(previousClaimID != Integer.parseInt(claimID)) {
+				claimnumber.add(cms1500page.createAndSubmitClaim(className,claimID));
+				
+				mcsnumber.add(claimnumber.get(previousClaimID).replaceAll("[^0-9]", ""));
+				
+				if(!mcsnumber.get(previousClaimID).equals("")) {
+				
+					report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " 
+					+ mcsnumber.get(previousClaimID));
+					
+				}else {
+					report(LogStatus.FAIL,"Not able to create claim");
+				}
+				
+				if(previousClaimID < Integer.parseInt(claimID)) {
+					previousClaimID++;
+				}
+			}
+		
+		}
 
 		String conStr = envConfig.getProperty("devDBConnectionString");
 
@@ -152,7 +167,7 @@ public class ClaimTest extends TestBase {
 
 		dbUtil.executeSP(conStr, wrapper);
 
-		claimMaintenancepage = homePage.navigateToClaimMaintenance();
+		claimMaintenancepage = mcoHomePage.navigateToClaimMaintenance();
 
 		claimMaintenancepage.isClaimMaintenancePageDisplayed();
 	
@@ -165,7 +180,7 @@ public class ClaimTest extends TestBase {
 				
 				String expectedReason = dataMap.get("expectedReasonCode");
 				
-				System.out.println("Expected reason : "+expectedReason);
+//				System.out.println("Expected reason : "+expectedReason);
 
 				claimMaintenancepage.clickFilter();
 				
@@ -185,19 +200,19 @@ public class ClaimTest extends TestBase {
 		
 		report(LogStatus.INFO, "Verify whether able to create and save a new CMS 1500 claim.");
 
-		loginPage = new MCOLoginPage(driver);
+		homePage = new HomePage(driver);
+		
+		mcoLoginPage = homePage.selectMCOLogin();
+		
+		mcoHomePage = mcoLoginPage.login(userName, passWord);
 
-		loginPage.selectMCOLogin();
-
-		homePage = loginPage.login(userName, passWord);
-
-		if (homePage.isLoginSuccessful()) {
+		if (mcoHomePage.isLoginSuccessful()) {
 			report(LogStatus.PASS, "Login successful with user - " + userName);
 		} else {
 			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
 		}
 
-		cms1500page = homePage.navigateToCMS1500Page();
+		cms1500page = mcoHomePage.navigateToCMS1500Page();
 
 		if (cms1500page.isCMS1500PageDisplayed()) {
 			report(LogStatus.PASS, "CMS 1500 page is displayed");
@@ -205,136 +220,263 @@ public class ClaimTest extends TestBase {
 			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
 		}
 
-		String claimnumber = cms1500page.createAndSaveClaim();
-
-		String mcsnumber = claimnumber.replaceAll("[^0-9]", "");
+		String className = this.getClass().getSimpleName();
+		
+		List<String> claimnumber = new ArrayList<String>();
+		
+		List<String> mcsnumber = new ArrayList<String>();
+		
+		int previousClaimID = 0;
+		
+		for (int i = 0; i < dataMapList.size(); i++) {
+			
+			dataMap = dataMapList.get(i);
+			
+			String claimID = dataMap.get("claimID");		
+			
+			if(previousClaimID != Integer.parseInt(claimID)) {
+				claimnumber.add(cms1500page.createAndSaveClaim(className,claimID));
+				
+				mcsnumber.add(claimnumber.get(previousClaimID).replaceAll("[^0-9]", ""));
+				
+				if(!mcsnumber.get(previousClaimID).equals("")) {
+				
+					report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " 
+					+ mcsnumber.get(previousClaimID));
+					
+				}else {
+					report(LogStatus.FAIL,"Not able to create claim");
+				}
+				
+				if(previousClaimID < Integer.parseInt(claimID)) {
+					previousClaimID++;
+				}
+			}
+		
+		}
+		
+//		String claimnumber = cms1500page.createAndSaveClaim();
+//
+//		String mcsnumber = claimnumber.replaceAll("[^0-9]", "");
 
 		report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " + mcsnumber);
 
-
 	}
 	
-//	@Test
-//	public void updateSaveCMS1500Claim() {
-//
-//		userName = envConfig.getProperty("userName");
-//		passWord = envConfig.getProperty("password");
-//		
-//		report(LogStatus.INFO, "Verify whether able to update and save a CMS 1500 claim.");
-//
-//		loginPage = new MCOLoginPage(driver);
-//
-//		loginPage.selectMCOLogin();
-//
-//		homePage = loginPage.login(userName, passWord);
-//
-//		if (homePage.isLoginSuccessful()) {
-//			report(LogStatus.PASS, "Login successful with user - " + userName);
-//		} else {
-//			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
-//		}
-//
-//		cms1500page = homePage.navigateToCMS1500Page();
-//
-//		if (cms1500page.isCMS1500PageDisplayed()) {
-//			report(LogStatus.PASS, "CMS 1500 page is displayed");
-//		} else {
-//			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
-//		}
-//
+	@Test
+	public void updateSaveCMS1500Claim() {
+
+		userName = envConfig.getProperty("userName");
+		passWord = envConfig.getProperty("password");
+		
+		report(LogStatus.INFO, "Verify whether able to update and save a CMS 1500 claim.");
+
+		homePage = new HomePage(driver);
+		
+		mcoLoginPage = homePage.selectMCOLogin();
+		
+		mcoHomePage = mcoLoginPage.login(userName, passWord);
+
+		if (mcoHomePage.isLoginSuccessful()) {
+			report(LogStatus.PASS, "Login successful with user - " + userName);
+		} else {
+			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
+		}
+
+		cms1500page = mcoHomePage.navigateToCMS1500Page();
+
+		if (cms1500page.isCMS1500PageDisplayed()) {
+			report(LogStatus.PASS, "CMS 1500 page is displayed");
+		} else {
+			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
+		}
+		
+		String className = this.getClass().getSimpleName();
+		
+		List<String> claimnumber = new ArrayList<String>();
+		
+		List<String> mcsnumber = new ArrayList<String>();
+		
+		int previousClaimID = 0;
+		
+		for (int i = 0; i < dataMapList.size(); i++) {
+			
+			dataMap = dataMapList.get(i);
+			
+			String claimID = dataMap.get("claimID");		
+			
+			if(previousClaimID != Integer.parseInt(claimID)) {
+				claimnumber.add(cms1500page.updateAndSaveCMS1500Claim(className,claimID));
+				
+				mcsnumber.add(claimnumber.get(previousClaimID).replaceAll("[^0-9]", ""));
+				
+				if(!mcsnumber.get(previousClaimID).equals("")) {
+				
+					report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " 
+					+ mcsnumber.get(previousClaimID));
+					
+				}else {
+					report(LogStatus.FAIL,"Not able to create claim");
+				}
+				
+				if(previousClaimID < Integer.parseInt(claimID)) {
+					previousClaimID++;
+				}
+			}
+		
+		}
+		
 //		String claimnumber = cms1500page.updateAndSaveCMS1500Claim();
 //		
 //		String mcsnumber = claimnumber.replaceAll("[^0-9]", "");
-//		
-//		report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " + mcsnumber);
-//
-//	}
-//	
-//	@Test
-//	public void updateSubmitCMS1500Claim() throws Exception {
-//
-//		userName = envConfig.getProperty("userName");
-//		passWord = envConfig.getProperty("password");
-//		
-//		report(LogStatus.INFO, "Verify whether able to update and submit a CMS 1500 claim.");
-//
-//		loginPage = new MCOLoginPage(driver);
-//
-//		loginPage.selectMCOLogin();
-//
-//		homePage = loginPage.login(userName, passWord);
-//
-//		if (homePage.isLoginSuccessful()) {
-//			report(LogStatus.PASS, "Login successful with user - " + userName);
-//		} else {
-//			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
-//		}
-//
-//		cms1500page = homePage.navigateToCMS1500Page();
-//
-//		if (cms1500page.isCMS1500PageDisplayed()) {
-//			report(LogStatus.PASS, "CMS 1500 page is displayed");
-//		} else {
-//			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
-//		}
-//
+		
+		report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " + mcsnumber);
+
+	}
+	
+	@Test
+	public void updateSubmitCMS1500Claim() throws Exception {
+
+		userName = envConfig.getProperty("userName");
+		passWord = envConfig.getProperty("password");
+		
+		report(LogStatus.INFO, "Verify whether able to update and submit a CMS 1500 claim.");
+
+		homePage = new HomePage(driver);
+		
+		mcoLoginPage = homePage.selectMCOLogin();
+		
+		mcoHomePage = mcoLoginPage.login(userName, passWord);
+
+		if (mcoHomePage.isLoginSuccessful()) {
+			report(LogStatus.PASS, "Login successful with user - " + userName);
+		} else {
+			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
+		}
+
+		cms1500page = mcoHomePage.navigateToCMS1500Page();
+
+		if (cms1500page.isCMS1500PageDisplayed()) {
+			report(LogStatus.PASS, "CMS 1500 page is displayed");
+		} else {
+			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
+		}
+
+		String className = this.getClass().getSimpleName();
+		
+		List<String> claimnumber = new ArrayList<String>();
+		
+		List<String> mcsnumber = new ArrayList<String>();
+		
+		int previousClaimID = 0;
+		
+		for (int i = 0; i < dataMapList.size(); i++) {
+			
+			dataMap = dataMapList.get(i);
+			
+			String claimID = dataMap.get("claimID");		
+			
+			if(previousClaimID != Integer.parseInt(claimID)) {
+				claimnumber.add(cms1500page.updateAndSubmitCMS1500Claim(className,claimID));
+				
+				mcsnumber.add(claimnumber.get(previousClaimID).replaceAll("[^0-9]", ""));
+				
+				if(!mcsnumber.get(previousClaimID).equals("")) {
+				
+					report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " 
+					+ mcsnumber.get(previousClaimID));
+					
+				}else {
+					report(LogStatus.FAIL,"Not able to create claim");
+				}
+				
+				if(previousClaimID < Integer.parseInt(claimID)) {
+					previousClaimID++;
+				}
+			}
+		
+		}
+		
 //		String claimnumber = cms1500page.updateAndSubmitCMS1500Claim();
 //		
 //		String mcsnumber = claimnumber.replaceAll("[^0-9]", "");
-//		
-//		report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " + mcsnumber);
-//
-//		String conStr = envConfig.getProperty("devDBConnectionString");
-//
-//		dbUtil = new DBUtil();
-//
-//		String wrapper = "asp_portal_claims_processing_wrapper";
-//
-//		dbUtil.executeSP(conStr, wrapper);
-//
-//		claimMaintenancepage = homePage.navigateToClaimMaintenance();
+		
+		report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " + mcsnumber);
+
+		String conStr = envConfig.getProperty("devDBConnectionString");
+
+		dbUtil = new DBUtil();
+
+		String wrapper = "asp_portal_claims_processing_wrapper";
+
+		dbUtil.executeSP(conStr, wrapper);
+		
+		claimMaintenancepage = mcoHomePage.navigateToClaimMaintenance();
+
+		claimMaintenancepage.isClaimMaintenancePageDisplayed();
+	
+		mcsnumber.stream().forEach(x->{
+			if(Objects.nonNull(x) && !x.isEmpty()) {
+				
+				int i = 0;
+				
+				dataMap = dataMapList.get(i);
+				
+				String expectedReason = dataMap.get("expectedReasonCode");
+				
+//				System.out.println("Expected reason : "+expectedReason);
+
+				claimMaintenancepage.clickFilter();
+				
+				claimMaintenancepage.searchWithMCSNumberAndViewClaim(x,expectedReason);
+				
+				i++;
+				}
+		});
+
+//		claimMaintenancepage = mcoHomePage.navigateToClaimMaintenance();
 //
 //		claimMaintenancepage.isClaimMaintenancePageDisplayed();
 //
 //		claimMaintenancepage.clickFilter();
 //
 //		claimMaintenancepage.searchWithMCSNumberAndViewClaim(mcsnumber);
-//
-//	}
-//	
-//	@Test
-//	public void viewCMS1500Claim() {
-//		userName = envConfig.getProperty("userName");
-//		passWord = envConfig.getProperty("password");
-//		
-//		String clmnum = dataMap.get("myMCSNumber");
-//		
-//		report(LogStatus.INFO, "Verify whether able to view a CMS 1500 claim.");
-//		
-//		loginPage = new MCOLoginPage(driver);
-//
-//		loginPage.selectMCOLogin();
-//
-//		homePage = loginPage.login(userName, passWord);
-//
-//		if (homePage.isLoginSuccessful()) {
-//			report(LogStatus.PASS, "Login successful with user - " + userName);
-//		} else {
-//			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
-//		}
-//
-//		cms1500page = homePage.navigateToCMS1500Page();
-//
-//		if (cms1500page.isCMS1500PageDisplayed()) {
-//			report(LogStatus.PASS, "CMS 1500 page is displayed");
-//		} else {
-//			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
-//		}
-//
-//		cms1500page.viewCMS1500(Integer.parseInt(clmnum));
-//		
-//	}
-//	
+
+	}
+	
+	@Test
+	public void viewCMS1500Claim() {
+		userName = envConfig.getProperty("userName");
+		passWord = envConfig.getProperty("password");
+		
+		String clmnum = dataMap.get("myMCSNumber");
+		
+		report(LogStatus.INFO, "Verify whether able to view a CMS 1500 claim.");
+		
+		homePage = new HomePage(driver);
+		
+		mcoLoginPage = homePage.selectMCOLogin();
+		
+		mcoHomePage = mcoLoginPage.login(userName, passWord);
+
+		if (mcoHomePage.isLoginSuccessful()) {
+			report(LogStatus.PASS, "Login successful with user - " + userName);
+		} else {
+			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
+		}
+
+		cms1500page = mcoHomePage.navigateToCMS1500Page();
+
+		if (cms1500page.isCMS1500PageDisplayed()) {
+			report(LogStatus.PASS, "CMS 1500 page is displayed");
+		} else {
+			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
+		}
+
+		cms1500page.viewCMS1500(Integer.parseInt(clmnum));
+		
+	}
+	
 //
 //	@Test
 //	public void EDIincomingFile837PTest() {
@@ -445,61 +587,61 @@ public class ClaimTest extends TestBase {
 //	}
 
 	
-	@Test
-	public void updateAndSubmitCMS1500Claim() {
-
-		userName = envConfig.getProperty("userName");
-		passWord = envConfig.getProperty("password");
-		
-		report(LogStatus.INFO, "Verify whether able to create and submit a new CMS 1500 claim.");
-		report(LogStatus.FAIL,"");
-
-		loginPage = new MCOLoginPage(driver);
-
-		loginPage.selectMCOLogin();
-
-		homePage = loginPage.login(userName, passWord);
-		
-		if (homePage.isLoginSuccessful()) {
-			report(LogStatus.PASS, "Login successful with user - " + userName);
-		} else {
-			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
-		}
-
-		cms1500page = homePage.navigateToCMS1500Page();
-
-		if (cms1500page.isCMS1500PageDisplayed()) {
-			report(LogStatus.PASS, "CMS 1500 page is displayed");
-		} else {
-			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
-		}
-		
-		List<String> claimnumber = new ArrayList<String>();
-		
-		List<String> mcsnumber = new ArrayList<String>();
-		
-		dataMapList.forEach(list -> {
-			
-			dataMap = list;
-			
-			claimnumber.add(cms1500page.updateAndSubmitCMS1500Claim());
-			
-			int i = claimnumber.size()-1;
-		
-			mcsnumber.add(claimnumber.get(i).replaceAll("[^0-9]", ""));
-			
-			if(!mcsnumber.get(i).equals("")) {
-			
-				report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " 
-				+ mcsnumber.get(i));
-				
-			}else {
-				report(LogStatus.FAIL,"Not able to create claim");
-			}
-			
-		});
-		
-		
+//	@Test
+//	public void updateAndSubmitCMS1500Claim() {
+//
+//		userName = envConfig.getProperty("userName");
+//		passWord = envConfig.getProperty("password");
+//		
+//		report(LogStatus.INFO, "Verify whether able to create and submit a new CMS 1500 claim.");
+//		report(LogStatus.FAIL,"");
+//
+//		homePage = new HomePage(driver);
+//		
+//		mcoLoginPage = homePage.selectMCOLogin();
+//		
+//		mcoHomePage = mcoLoginPage.login(userName, passWord);
+//		
+//		if (mcoHomePage.isLoginSuccessful()) {
+//			report(LogStatus.PASS, "Login successful with user - " + userName);
+//		} else {
+//			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
+//		}
+//
+//		cms1500page = mcoHomePage.navigateToCMS1500Page();
+//
+//		if (cms1500page.isCMS1500PageDisplayed()) {
+//			report(LogStatus.PASS, "CMS 1500 page is displayed");
+//		} else {
+//			report(LogStatus.FAIL, "CMS 1500 page is not displayed");
+//		}
+//		
+//		List<String> claimnumber = new ArrayList<String>();
+//		
+//		List<String> mcsnumber = new ArrayList<String>();
+//		
+//		dataMapList.forEach(list -> {
+//			
+//			dataMap = list;
+//			
+//			claimnumber.add(cms1500page.updateAndSubmitCMS1500Claim());
+//			
+//			int i = claimnumber.size()-1;
+//		
+//			mcsnumber.add(claimnumber.get(i).replaceAll("[^0-9]", ""));
+//			
+//			if(!mcsnumber.get(i).equals("")) {
+//			
+//				report(LogStatus.INFO, "My MCS Claim # for new created CMS 1500 claim is : " 
+//				+ mcsnumber.get(i));
+//				
+//			}else {
+//				report(LogStatus.FAIL,"Not able to create claim");
+//			}
+//			
+//		});
+//		
+//		
 //		for (int i = 0; i < dataMapList.size(); i++) {
 //			
 //			dataMap = dataMapList.get(i);
@@ -519,38 +661,38 @@ public class ClaimTest extends TestBase {
 //
 //		
 //		}
-
-		String conStr = envConfig.getProperty("devDBConnectionString");
-
-		dbUtil = new DBUtil();
-
-		String wrapper = "asp_portal_claims_processing_wrapper";
-
-		dbUtil.executeSP(conStr, wrapper);
-
-		claimMaintenancepage = homePage.navigateToClaimMaintenance();
-
-		claimMaintenancepage.isClaimMaintenancePageDisplayed();
-	
-		mcsnumber.stream().forEach(x->{
-			if(Objects.nonNull(x) && !x.isEmpty()) {
-				
-				int i = 0;
-				
-				dataMap = dataMapList.get(i);
-				
-				String expectedReason = dataMap.get("expectedReasonCode");
-				
-				System.out.println("Expected reason : "+expectedReason);
-
-				claimMaintenancepage.clickFilter();
-				
-				claimMaintenancepage.searchWithMCSNumberAndViewClaim(x,expectedReason);
-				
-				i++;
-				}
-		});
-
-	}
+//
+//		String conStr = envConfig.getProperty("devDBConnectionString");
+//
+//		dbUtil = new DBUtil();
+//
+//		String wrapper = "asp_portal_claims_processing_wrapper";
+//
+//		dbUtil.executeSP(conStr, wrapper);
+//
+//		claimMaintenancepage = mcoHomePage.navigateToClaimMaintenance();
+//
+//		claimMaintenancepage.isClaimMaintenancePageDisplayed();
+//	
+//		mcsnumber.stream().forEach(x->{
+//			if(Objects.nonNull(x) && !x.isEmpty()) {
+//				
+//				int i = 0;
+//				
+//				dataMap = dataMapList.get(i);
+//				
+//				String expectedReason = dataMap.get("expectedReasonCode");
+//				
+//				System.out.println("Expected reason : "+expectedReason);
+//
+//				claimMaintenancepage.clickFilter();
+//				
+//				claimMaintenancepage.searchWithMCSNumberAndViewClaim(x,expectedReason);
+//				
+//				i++;
+//				}
+//		});
+//
+//	}
 	
 }

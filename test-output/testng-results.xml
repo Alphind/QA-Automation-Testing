@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testng-results ignored="5" total="6" passed="1" failed="0" skipped="0">
+<testng-results ignored="4" total="5" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2023-09-01T05:52:31 GMT-04:00" name="Default suite" finished-at="2023-09-01T05:53:17 GMT-04:00" duration-ms="45776">
+  <suite started-at="2024-01-31T05:29:40 GMT-05:00" name="Default suite" finished-at="2024-01-31T05:33:29 GMT-05:00" duration-ms="229326">
     <groups>
     </groups>
-    <test started-at="2023-09-01T05:52:31 GMT-04:00" name="Default test" finished-at="2023-09-01T05:53:17 GMT-04:00" duration-ms="45776">
+    <test started-at="2024-01-31T05:29:40 GMT-05:00" name="Default test" finished-at="2024-01-31T05:33:29 GMT-05:00" duration-ms="229326">
       <class name="org.alphind.alphamcs.test.ClaimTest">
-        <test-method is-config="true" signature="suiteSetup()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@19fe4644]" started-at="2023-09-01T05:52:27 GMT-04:00" name="suiteSetup" finished-at="2023-09-01T05:52:31 GMT-04:00" duration-ms="3678" status="PASS">
+        <test-method is-config="true" signature="suiteSetup()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@48c35007]" started-at="2024-01-31T05:29:38 GMT-05:00" name="suiteSetup" finished-at="2024-01-31T05:29:40 GMT-05:00" duration-ms="2412" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- suiteSetup -->
-        <test-method is-config="true" signature="loadBaseUrl(java.lang.reflect.Method)[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@19fe4644]" started-at="2023-09-01T05:52:31 GMT-04:00" name="loadBaseUrl" finished-at="2023-09-01T05:52:49 GMT-04:00" duration-ms="18059" status="PASS">
+        <test-method is-config="true" signature="loadBaseUrl(java.lang.reflect.Method)[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@48c35007]" started-at="2024-01-31T05:29:40 GMT-05:00" name="loadBaseUrl" finished-at="2024-01-31T05:30:16 GMT-05:00" duration-ms="35737" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[public void org.alphind.alphamcs.test.ClaimTest.viewCMS1500Claim()]]>
+                <![CDATA[public void org.alphind.alphamcs.test.ClaimTest.createCMS1500Claim()]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- loadBaseUrl -->
-        <test-method signature="viewCMS1500Claim()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@19fe4644]" started-at="2023-09-01T05:52:49 GMT-04:00" name="viewCMS1500Claim" finished-at="2023-09-01T05:53:15 GMT-04:00" duration-ms="26268" status="PASS">
+        <test-method signature="createCMS1500Claim()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@48c35007]" started-at="2024-01-31T05:30:16 GMT-05:00" name="createCMS1500Claim" finished-at="2024-01-31T05:33:28 GMT-05:00" duration-ms="192488" status="PASS">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- viewCMS1500Claim -->
-        <test-method is-config="true" signature="screenshotAndDeleteCookies(org.testng.ITestResult)[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@19fe4644]" started-at="2023-09-01T05:53:15 GMT-04:00" name="screenshotAndDeleteCookies" finished-at="2023-09-01T05:53:17 GMT-04:00" duration-ms="1332" status="PASS">
+        </test-method> <!-- createCMS1500Claim -->
+        <test-method is-config="true" signature="screenshotAndDeleteCookies(org.testng.ITestResult)[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@48c35007]" started-at="2024-01-31T05:33:28 GMT-05:00" name="screenshotAndDeleteCookies" finished-at="2024-01-31T05:33:29 GMT-05:00" duration-ms="1043" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[[TestResult name=viewCMS1500Claim status=SUCCESS method=ClaimTest.viewCMS1500Claim()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@19fe4644] output={null}]]]>
+                <![CDATA[[TestResult name=createCMS1500Claim status=SUCCESS method=ClaimTest.createCMS1500Claim()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@48c35007] output={null}]]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- screenshotAndDeleteCookies -->
-        <test-method is-config="true" signature="suiteTearDown()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@19fe4644]" started-at="2023-09-01T05:53:17 GMT-04:00" name="suiteTearDown" finished-at="2023-09-01T05:53:18 GMT-04:00" duration-ms="1071" status="PASS">
+        <test-method is-config="true" signature="suiteTearDown()[pri:0, instance:org.alphind.alphamcs.test.ClaimTest@48c35007]" started-at="2024-01-31T05:33:29 GMT-05:00" name="suiteTearDown" finished-at="2024-01-31T05:33:30 GMT-05:00" duration-ms="459" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- suiteTearDown -->

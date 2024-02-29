@@ -6,6 +6,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/** Copyright (C) 2023  Alphind Solution Software Pvt. Ltd. - All Rights Reserved.
+ * 
+ *  created by  Abhishek.K.
+ *  
+ *  You may use, distribute and modify this code for internal purpose,  however, distribution outside the organization     
+ *  is prohibited without prior and proper license agreement
+ *  
+ */
+
 public class ConfigurationReader {
 
 	private static Properties p = new Properties();

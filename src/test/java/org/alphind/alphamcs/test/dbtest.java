@@ -64,6 +64,8 @@ public class dbtest extends TestBase{
         
         //System.out.println(java.util.Date.parse(phySignDate));;
         
+        System.out.println(patlastName);
+        
         System.out.println(Date.valueOf(a[0]));
         
         SimpleDateFormat sd = new SimpleDateFormat("MM/dd/YYYY");

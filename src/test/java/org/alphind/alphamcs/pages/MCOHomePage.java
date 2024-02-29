@@ -4,6 +4,7 @@ import org.alphind.alphamcs.base.CommonFunctions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -36,6 +37,9 @@ public class MCOHomePage extends CommonFunctions {
 
 	@FindBy(xpath = "//*[@href='#navbarDropdownPatient']")
 	WebElement patientLinkNavbar;
+	
+	@FindBy(xpath = "//a[text()='Patient Maintenance']")
+	private WebElement patientMaintenance;
 
 	@FindBy(xpath = "//*[text()='Enrollments']")
 	WebElement patientEnrollmentsLink;
@@ -84,6 +88,27 @@ public class MCOHomePage extends CommonFunctions {
 
 	public void logout() {
 		click(logout, "Logout");
+	}
+	
+	/**
+	 * Click on patient link
+	 * Created by Nandhalala
+	 */
+	private void clickPatient() {
+		waitForLoadingToDisappear();
+		waitUntilClickable(patientLinkNavbar, 30);
+		click(patientLinkNavbar, "Patient");
+		waitForLoadingToDisappear();
+	}
+	
+	public MCOPatientMaintenancePage navigateToPatientMaintenance() {
+		if(!patientMaintenance.isDisplayed()) {
+			clickPatient();
+		}
+		waitUntilClickable(patientMaintenance, 0);
+		click(patientMaintenance, "Patient Maintenance");
+		waitForLoadingToDisappear();
+		return new MCOPatientMaintenancePage(driver);
 	}
 
 	public void naviagteToPatientEnrollments() {

@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
@@ -156,6 +157,8 @@ public class CommonFunctions extends TestBase {
 		new WebDriverWait(driver, seconds).until(ExpectedConditions.visibilityOfElementLocated(elexpath));
 	}
 	
+	
+	
 	public String getCurrentDate() {
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
 		return df.format(new Date());
@@ -174,7 +177,7 @@ public class CommonFunctions extends TestBase {
 	//Created by nandhalala
 	//To get text value from web element
 	public String getText(WebElement ele) {
-		return ele.getText();
+			return ele.getText();	
 	}
 	
 	//created by nandhalala

@@ -4,6 +4,7 @@ import org.alphind.alphamcs.base.TestBase;
 import org.alphind.alphamcs.pages.MCOCMS1500Page;
 import org.alphind.alphamcs.pages.MCOHomePage;
 import org.alphind.alphamcs.pages.MCOLoginPage;
+import org.alphind.alphamcs.pages.HomePage;
 import org.alphind.alphamcs.pages.MCOPatientEnrollmentPage;
 import org.alphind.alphamcs.util.DBUtil;
 import org.alphind.alphamcs.util.ExcelUtil;
@@ -29,33 +30,36 @@ public class AlphaMCSTest extends TestBase {
 	private static final Logger log = LogManager.getLogger(AlphaMCSTest.class);
 
 	DBUtil dbUtil;
-	MCOLoginPage loginPage;
-	MCOHomePage homePage;
-	MCOPatientEnrollmentPage patientEnrollmentPage;
-	MCOCMS1500Page cms1500;
+	HomePage homePage;
+	MCOLoginPage mcoLoginPage;
+	MCOHomePage mcoHomePage;
+	MCOPatientEnrollmentPage mcoPatientEnrollmentPage;
+	MCOCMS1500Page mcoCMS1500;
 
 	@Test
 	public void newPatientEnrollment() {
 		report(LogStatus.INFO, "Test to verify if user can enroll a new patient");
 
-		loginPage = new MCOLoginPage(driver);
+		homePage = new HomePage(driver);
 
 		String userName = envConfig.getProperty("userName");
-		String password = envConfig.getProperty("password");
+		String passWord = envConfig.getProperty("password");
 
-		loginPage.selectMCOLogin();
+		homePage = new HomePage(driver);
+		
+		mcoLoginPage = homePage.selectMCOLogin();
+		
+		mcoHomePage = mcoLoginPage.login(userName, passWord);
 
-		homePage = loginPage.login(userName, password);
-
-		if (homePage.isLoginSuccessful()) {
+		if (mcoHomePage.isLoginSuccessful()) {
 			report(LogStatus.PASS, "Login successful with user - " + userName);
 		} else {
 			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
 		}
 
-		homePage.naviagteToPatientEnrollments();
-		patientEnrollmentPage = new MCOPatientEnrollmentPage(driver);
-		String patientId = patientEnrollmentPage.createEnrollment();
+		mcoHomePage.naviagteToPatientEnrollments();
+		mcoPatientEnrollmentPage = new MCOPatientEnrollmentPage(driver);
+		String patientId = mcoPatientEnrollmentPage.createEnrollment();
 		report(LogStatus.PASS, "New Patient enrolled, Patient ID - " + patientId);
 		// patientEnrollmentPage.filterByPatientId(patientId);
 
@@ -70,23 +74,25 @@ public class AlphaMCSTest extends TestBase {
 	public void claimCMS1500() {
 		report(LogStatus.INFO, "Test to verify if user can file a CMS 1500 claim");
 
-		loginPage = new MCOLoginPage(driver);
+		homePage = new HomePage(driver);
 
 		String userName = envConfig.getProperty("userName");
-		String password = envConfig.getProperty("password");
+		String passWord = envConfig.getProperty("password");
 
-		loginPage.selectMCOLogin();
+		homePage = new HomePage(driver);
+		
+		mcoLoginPage = homePage.selectMCOLogin();
+		
+		mcoHomePage = mcoLoginPage.login(userName, passWord);
 
-		homePage = loginPage.login(userName, password);
-
-		if (homePage.isLoginSuccessful()) {
+		if (mcoHomePage.isLoginSuccessful()) {
 			report(LogStatus.PASS, "Login successful with user - " + userName);
 		} else {
 			report(LogStatus.FAIL, "Login unsuccessful with user - " + userName);
 		}
 
 		//homePage.naviagteToCMS1500();
-		cms1500 = new MCOCMS1500Page(driver);
+		mcoCMS1500 = new MCOCMS1500Page(driver);
 		//String claimId = cms1500.createClaim();
 		//report(LogStatus.PASS, "New CMS 1500 claim created, Claim ID - " + claimId);
 		// patientEnrollmentPage.filterByPatientId(patientId);
